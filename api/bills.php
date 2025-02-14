@@ -2,12 +2,13 @@
 
 /**
  * @author A. Kerem Gök
- * Fatura hatırlatıcıları API endpoint'i
+ * Fatura yönetimi API endpoint'i
  */
 
 header('Content-Type: application/json');
 require_once '../includes/db.php';
 require_once '../includes/functions.php';
+require_once '../includes/mail.php';
 
 // Oturum kontrolü
 if (!isLoggedIn()) {
@@ -19,15 +20,103 @@ $user_id = $_SESSION['user_id'];
 
 switch ($_SERVER['REQUEST_METHOD']) {
     case 'GET':
-        // Fatura hatırlatıcılarını listele
+        // Faturaları listele
         try {
-            $stmt = $pdo->prepare("
-                SELECT * FROM bill_reminders 
-                WHERE user_id = ? 
-                ORDER BY due_date ASC
-            ");
-            $stmt->execute([$user_id]);
-            echo json_encode(['success' => true, 'data' => $stmt->fetchAll()]);
+            $filters = [];
+            $params = [$user_id];
+            $sql = "SELECT br.*, 
+                          bc.name as category_name,
+                          bc.icon as category_icon,
+                          bc.color as category_color,
+                          DATEDIFF(br.due_date, CURDATE()) as days_remaining,
+                          (
+                              SELECT COALESCE(SUM(amount), 0)
+                              FROM bill_payments
+                              WHERE bill_id = br.id
+                          ) as total_paid
+                   FROM bill_reminders br 
+                   LEFT JOIN bill_categories bc ON bc.id = br.category 
+                   WHERE br.user_id = ?";
+
+            // Durum filtresi
+            if (isset($_GET['status'])) {
+                $sql .= " AND br.status = ?";
+                $params[] = $_GET['status'];
+            }
+
+            // Kategori filtresi
+            if (isset($_GET['category'])) {
+                $sql .= " AND br.category = ?";
+                $params[] = $_GET['category'];
+            }
+
+            // Para birimi filtresi
+            if (isset($_GET['currency'])) {
+                $sql .= " AND br.currency = ?";
+                $params[] = $_GET['currency'];
+            }
+
+            // Tekrar aralığı filtresi
+            if (isset($_GET['repeat_interval'])) {
+                $sql .= " AND br.repeat_interval = ?";
+                $params[] = $_GET['repeat_interval'];
+            }
+
+            // Tarih filtresi
+            if (isset($_GET['start_date'])) {
+                $sql .= " AND br.due_date >= ?";
+                $params[] = $_GET['start_date'];
+            }
+            if (isset($_GET['end_date'])) {
+                $sql .= " AND br.due_date <= ?";
+                $params[] = $_GET['end_date'];
+            }
+
+            // Sıralama
+            $sql .= " ORDER BY " . ($_GET['sort'] ?? 'due_date') . " " . ($_GET['order'] ?? 'ASC');
+
+            // Sayfalama
+            $page = isset($_GET['page']) ? max(1, intval($_GET['page'])) : 1;
+            $limit = isset($_GET['limit']) ? min(100, max(1, intval($_GET['limit']))) : 20;
+            $offset = ($page - 1) * $limit;
+
+            // Toplam kayıt sayısı
+            $countStmt = $pdo->prepare(str_replace("SELECT br.*", "SELECT COUNT(*)", $sql));
+            $countStmt->execute($params);
+            $total = $countStmt->fetchColumn();
+
+            // Sayfalı sorgu
+            $sql .= " LIMIT ? OFFSET ?";
+            $params[] = $limit;
+            $params[] = $offset;
+
+            $stmt = $pdo->prepare($sql);
+            $stmt->execute($params);
+            $bills = $stmt->fetchAll();
+
+            // Fatura ödemelerini getir
+            foreach ($bills as &$bill) {
+                $stmt = $pdo->prepare("
+                    SELECT * FROM bill_payments 
+                    WHERE bill_id = ? 
+                    ORDER BY payment_date DESC
+                ");
+                $stmt->execute([$bill['id']]);
+                $bill['payments'] = $stmt->fetchAll();
+            }
+
+            echo json_encode([
+                'success' => true,
+                'data' => [
+                    'bills' => $bills,
+                    'pagination' => [
+                        'total' => $total,
+                        'page' => $page,
+                        'limit' => $limit,
+                        'pages' => ceil($total / $limit)
+                    ]
+                ]
+            ]);
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(['error' => 'Veritabanı hatası']);
@@ -35,97 +124,371 @@ switch ($_SERVER['REQUEST_METHOD']) {
         break;
 
     case 'POST':
-        // Yeni fatura hatırlatıcısı ekle
+        // Yeni fatura ekle
         try {
             $data = json_decode(file_get_contents('php://input'), true);
             checkToken($data['csrf_token'] ?? '');
 
-            $stmt = $pdo->prepare("
-                INSERT INTO bill_reminders (
-                    user_id, title, amount, due_date, 
-                    repeat_interval, currency
-                ) VALUES (?, ?, ?, ?, ?, ?)
-            ");
+            // Validasyonlar
+            if (empty($data['title'])) {
+                throw new Exception('Başlık gereklidir');
+            }
 
-            $stmt->execute([
-                $user_id,
-                $data['title'],
-                $data['amount'],
-                $data['due_date'],
-                $data['repeat_interval'] ?? 'monthly',
-                $data['currency'] ?? 'TRY'
-            ]);
+            if (!validateAmount($data['amount'])) {
+                throw new Exception('Geçersiz tutar');
+            }
 
-            logActivity($user_id, 'bill_reminder_add', "Yeni fatura hatırlatıcısı eklendi: {$data['title']}");
+            if (!validateDate($data['due_date'])) {
+                throw new Exception('Geçersiz vade tarihi');
+            }
 
-            echo json_encode([
-                'success' => true,
-                'message' => 'Fatura hatırlatıcısı başarıyla eklendi',
-                'id' => $pdo->lastInsertId()
-            ]);
-        } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Veritabanı hatası']);
+            if (!validateCurrency($data['currency'] ?? 'TRY')) {
+                throw new Exception('Geçersiz para birimi');
+            }
+
+            $validIntervals = json_decode(BILL_REPEAT_INTERVALS, true);
+            if (!array_key_exists($data['repeat_interval'] ?? 'monthly', $validIntervals)) {
+                throw new Exception('Geçersiz tekrar aralığı');
+            }
+
+            $pdo->beginTransaction();
+
+            try {
+                // Fatura kategorisi kontrolü/oluşturma
+                if (!empty($data['category'])) {
+                    $stmt = $pdo->prepare("
+                        SELECT id FROM bill_categories 
+                        WHERE user_id = ? AND name = ?
+                    ");
+                    $stmt->execute([$user_id, $data['category']]);
+                    $category = $stmt->fetch();
+
+                    if (!$category) {
+                        $stmt = $pdo->prepare("
+                            INSERT INTO bill_categories (
+                                user_id, name, icon, color
+                            ) VALUES (?, ?, ?, ?)
+                        ");
+                        $stmt->execute([
+                            $user_id,
+                            $data['category'],
+                            $data['category_icon'] ?? null,
+                            $data['category_color'] ?? '#' . substr(md5($data['category']), 0, 6)
+                        ]);
+                        $category_id = $pdo->lastInsertId();
+                    } else {
+                        $category_id = $category['id'];
+                    }
+                }
+
+                // Fatura kaydı
+                $stmt = $pdo->prepare("
+                    INSERT INTO bill_reminders (
+                        user_id, title, amount, due_date,
+                        repeat_interval, description, category,
+                        currency, status, notification_days
+                    ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ");
+
+                $stmt->execute([
+                    $user_id,
+                    $data['title'],
+                    $data['amount'],
+                    $data['due_date'],
+                    $data['repeat_interval'] ?? 'monthly',
+                    $data['description'] ?? null,
+                    $category_id ?? null,
+                    $data['currency'] ?? 'TRY',
+                    'active',
+                    $data['notification_days'] ?? 3
+                ]);
+
+                $bill_id = $pdo->lastInsertId();
+
+                // Bildirim ayarı
+                $stmt = $pdo->prepare("
+                    INSERT INTO bill_notifications (
+                        user_id, notification_type, days_before
+                    ) VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE days_before = ?
+                ");
+
+                foreach (['email', 'sms', 'push'] as $type) {
+                    if (isset($data['notifications'][$type])) {
+                        $stmt->execute([
+                            $user_id,
+                            $type,
+                            $data['notifications'][$type],
+                            $data['notifications'][$type]
+                        ]);
+                    }
+                }
+
+                $pdo->commit();
+
+                logActivity($user_id, 'bill_add', "Yeni fatura eklendi: {$data['title']}");
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Fatura başarıyla eklendi',
+                    'id' => $bill_id
+                ]);
+
+            } catch (Exception $e) {
+                $pdo->rollBack();
+                throw $e;
+            }
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode(['error' => $e->getMessage()]);
         }
         break;
 
     case 'PUT':
-        // Fatura hatırlatıcısı güncelle
+        // Fatura güncelle
         try {
             $data = json_decode(file_get_contents('php://input'), true);
             checkToken($data['csrf_token'] ?? '');
 
-            $stmt = $pdo->prepare("
-                UPDATE bill_reminders 
-                SET title = ?, amount = ?, due_date = ?, 
-                    repeat_interval = ?, currency = ?
-                WHERE id = ? AND user_id = ?
-            ");
+            // Validasyonlar
+            if (empty($data['title'])) {
+                throw new Exception('Başlık gereklidir');
+            }
 
-            $stmt->execute([
-                $data['title'],
-                $data['amount'],
-                $data['due_date'],
-                $data['repeat_interval'],
-                $data['currency'] ?? 'TRY',
-                $data['id'],
-                $user_id
-            ]);
+            if (!validateAmount($data['amount'])) {
+                throw new Exception('Geçersiz tutar');
+            }
 
-            logActivity($user_id, 'bill_reminder_update', "Fatura hatırlatıcısı güncellendi: ID {$data['id']}");
+            if (!validateDate($data['due_date'])) {
+                throw new Exception('Geçersiz vade tarihi');
+            }
 
-            echo json_encode([
-                'success' => true,
-                'message' => 'Fatura hatırlatıcısı başarıyla güncellendi'
-            ]);
+            if (!validateCurrency($data['currency'] ?? 'TRY')) {
+                throw new Exception('Geçersiz para birimi');
+            }
+
+            $validIntervals = json_decode(BILL_REPEAT_INTERVALS, true);
+            if (!array_key_exists($data['repeat_interval'] ?? 'monthly', $validIntervals)) {
+                throw new Exception('Geçersiz tekrar aralığı');
+            }
+
+            $pdo->beginTransaction();
+
+            try {
+                // Fatura kategorisi kontrolü/güncelleme
+                if (!empty($data['category'])) {
+                    $stmt = $pdo->prepare("
+                        SELECT id FROM bill_categories 
+                        WHERE user_id = ? AND name = ?
+                    ");
+                    $stmt->execute([$user_id, $data['category']]);
+                    $category = $stmt->fetch();
+
+                    if (!$category) {
+                        $stmt = $pdo->prepare("
+                            INSERT INTO bill_categories (
+                                user_id, name, icon, color
+                            ) VALUES (?, ?, ?, ?)
+                        ");
+                        $stmt->execute([
+                            $user_id,
+                            $data['category'],
+                            $data['category_icon'] ?? null,
+                            $data['category_color'] ?? '#' . substr(md5($data['category']), 0, 6)
+                        ]);
+                        $category_id = $pdo->lastInsertId();
+                    } else {
+                        $category_id = $category['id'];
+                    }
+                }
+
+                // Fatura güncelleme
+                $stmt = $pdo->prepare("
+                    UPDATE bill_reminders 
+                    SET title = ?, amount = ?, due_date = ?,
+                        repeat_interval = ?, description = ?, category = ?,
+                        currency = ?, status = ?, notification_days = ?
+                    WHERE id = ? AND user_id = ?
+                ");
+
+                $stmt->execute([
+                    $data['title'],
+                    $data['amount'],
+                    $data['due_date'],
+                    $data['repeat_interval'] ?? 'monthly',
+                    $data['description'] ?? null,
+                    $category_id ?? null,
+                    $data['currency'] ?? 'TRY',
+                    $data['status'] ?? 'active',
+                    $data['notification_days'] ?? 3,
+                    $data['id'],
+                    $user_id
+                ]);
+
+                // Bildirim ayarlarını güncelle
+                $stmt = $pdo->prepare("
+                    INSERT INTO bill_notifications (
+                        user_id, notification_type, days_before
+                    ) VALUES (?, ?, ?)
+                    ON DUPLICATE KEY UPDATE days_before = ?
+                ");
+
+                foreach (['email', 'sms', 'push'] as $type) {
+                    if (isset($data['notifications'][$type])) {
+                        $stmt->execute([
+                            $user_id,
+                            $type,
+                            $data['notifications'][$type],
+                            $data['notifications'][$type]
+                        ]);
+                    }
+                }
+
+                $pdo->commit();
+
+                logActivity($user_id, 'bill_update', "Fatura güncellendi: ID {$data['id']}");
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Fatura başarıyla güncellendi'
+                ]);
+
+            } catch (Exception $e) {
+                $pdo->rollBack();
+                throw $e;
+            }
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode(['error' => $e->getMessage()]);
+        }
+        break;
+
+    case 'DELETE':
+        // Fatura sil
+        try {
+            $data = json_decode(file_get_contents('php://input'), true);
+            checkToken($data['csrf_token'] ?? '');
+
+            $pdo->beginTransaction();
+
+            try {
+                // Fatura ödemelerini sil
+                $stmt = $pdo->prepare("
+                    DELETE FROM bill_payments 
+                    WHERE bill_id = ? 
+                    AND bill_id IN (
+                        SELECT id FROM bill_reminders 
+                        WHERE user_id = ?
+                    )
+                ");
+                $stmt->execute([$data['id'], $user_id]);
+
+                // Faturayı sil
+                $stmt = $pdo->prepare("
+                    DELETE FROM bill_reminders 
+                    WHERE id = ? AND user_id = ?
+                ");
+                $stmt->execute([$data['id'], $user_id]);
+
+                $pdo->commit();
+
+                logActivity($user_id, 'bill_delete', "Fatura silindi: ID {$data['id']}");
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Fatura başarıyla silindi'
+                ]);
+
+            } catch (Exception $e) {
+                $pdo->rollBack();
+                throw $e;
+            }
         } catch (PDOException $e) {
             http_response_code(500);
             echo json_encode(['error' => 'Veritabanı hatası']);
         }
         break;
 
-    case 'DELETE':
-        // Fatura hatırlatıcısı sil
+    case 'PATCH':
+        // Fatura ödemesi ekle/güncelle
         try {
             $data = json_decode(file_get_contents('php://input'), true);
             checkToken($data['csrf_token'] ?? '');
 
-            $stmt = $pdo->prepare("
-                DELETE FROM bill_reminders 
-                WHERE id = ? AND user_id = ?
-            ");
+            if (!validateAmount($data['amount'])) {
+                throw new Exception('Geçersiz ödeme tutarı');
+            }
 
-            $stmt->execute([$data['id'], $user_id]);
+            if (!validateDate($data['payment_date'])) {
+                throw new Exception('Geçersiz ödeme tarihi');
+            }
 
-            logActivity($user_id, 'bill_reminder_delete', "Fatura hatırlatıcısı silindi: ID {$data['id']}");
+            $pdo->beginTransaction();
 
-            echo json_encode([
-                'success' => true,
-                'message' => 'Fatura hatırlatıcısı başarıyla silindi'
-            ]);
-        } catch (PDOException $e) {
-            http_response_code(500);
-            echo json_encode(['error' => 'Veritabanı hatası']);
+            try {
+                // Fatura kontrolü
+                $stmt = $pdo->prepare("
+                    SELECT * FROM bill_reminders 
+                    WHERE id = ? AND user_id = ?
+                ");
+                $stmt->execute([$data['bill_id'], $user_id]);
+                $bill = $stmt->fetch();
+
+                if (!$bill) {
+                    throw new Exception('Fatura bulunamadı');
+                }
+
+                // Ödeme kaydı
+                $stmt = $pdo->prepare("
+                    INSERT INTO bill_payments (
+                        bill_id, amount, payment_date,
+                        payment_method, reference_no, notes
+                    ) VALUES (?, ?, ?, ?, ?, ?)
+                ");
+
+                $stmt->execute([
+                    $data['bill_id'],
+                    $data['amount'],
+                    $data['payment_date'],
+                    $data['payment_method'] ?? null,
+                    $data['reference_no'] ?? null,
+                    $data['notes'] ?? null
+                ]);
+
+                // Toplam ödeme tutarını kontrol et
+                $stmt = $pdo->prepare("
+                    SELECT COALESCE(SUM(amount), 0) as total_paid
+                    FROM bill_payments
+                    WHERE bill_id = ?
+                ");
+                $stmt->execute([$data['bill_id']]);
+                $total_paid = $stmt->fetch()['total_paid'];
+
+                // Fatura durumunu güncelle
+                $status = $total_paid >= $bill['amount'] ? 'paid' : 'active';
+                $stmt = $pdo->prepare("
+                    UPDATE bill_reminders 
+                    SET status = ? 
+                    WHERE id = ?
+                ");
+                $stmt->execute([$status, $data['bill_id']]);
+
+                $pdo->commit();
+
+                logActivity($user_id, 'bill_payment', "Fatura ödemesi eklendi: {$data['amount']} TL - Fatura ID: {$data['bill_id']}");
+
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Fatura ödemesi başarıyla kaydedildi'
+                ]);
+
+            } catch (Exception $e) {
+                $pdo->rollBack();
+                throw $e;
+            }
+        } catch (Exception $e) {
+            http_response_code(400);
+            echo json_encode(['error' => $e->getMessage()]);
         }
         break;
 
