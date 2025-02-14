@@ -98,11 +98,11 @@ if (!isLoggedIn()) {
         <?php if (isLoggedIn()): ?>
             <ul class="nav-menu">
                 <li><a href="/"><i class="fas fa-home"></i> Ana Sayfa</a></li>
-                <li><a href="/pages/income.php"><i class="fas fa-plus-circle"></i> Gelirler</a></li>
-                <li><a href="/pages/expenses.php"><i class="fas fa-minus-circle"></i> Giderler</a></li>
-                <li><a href="/pages/savings.php"><i class="fas fa-piggy-bank"></i> Birikimler</a></li>
-                <li><a href="/pages/bills.php"><i class="fas fa-file-invoice"></i> Faturalar</a></li>
-                <li><a href="/pages/reports.php"><i class="fas fa-chart-line"></i> Raporlar</a></li>
+                <li><a href="income.php"><i class="fas fa-plus-circle"></i> Gelirler</a></li>
+                <li><a href="expenses.php"><i class="fas fa-minus-circle"></i> Giderler</a></li>
+                <li><a href="savings.php"><i class="fas fa-piggy-bank"></i> Birikimler</a></li>
+                <li><a href="bills.php"><i class="fas fa-file-invoice"></i> Faturalar</a></li>
+                <li><a href="reports.php"><i class="fas fa-chart-line"></i> Raporlar</a></li>
             </ul>
 
             <div class="nav-right">
@@ -123,13 +123,13 @@ if (!isLoggedIn()) {
                         <i class="fas fa-user-circle"></i>
                     </button>
                     <div class="dropdown-menu">
-                        <a href="/pages/settings/profile.php">
+                        <a href="profile.php">
                             <i class="fas fa-user"></i> Profil
                         </a>
-                        <a href="/pages/settings/settings.php">
+                        <a href="settings.php">
                             <i class="fas fa-cog"></i> Ayarlar
                         </a>
-                        <a href="/pages/auth/logout.php">
+                        <a href="logout.php">
                             <i class="fas fa-sign-out-alt"></i> Çıkış
                         </a>
                     </div>

@@ -11,22 +11,22 @@
             <div class="footer-section">
                 <h4>Hızlı Erişim</h4>
                 <ul>
-                    <li><a href="/pages/income.php">Gelirler</a></li>
-                    <li><a href="/pages/expenses.php">Giderler</a></li>
-                    <li><a href="/pages/savings.php">Birikimler</a></li>
-                    <li><a href="/pages/bills.php">Faturalar</a></li>
-                    <li><a href="/pages/reports.php">Raporlar</a></li>
+                    <li><a href="income.php">Gelirler</a></li>
+                    <li><a href="expenses.php">Giderler</a></li>
+                    <li><a href="savings.php">Birikimler</a></li>
+                    <li><a href="bills.php">Faturalar</a></li>
+                    <li><a href="reports.php">Raporlar</a></li>
                 </ul>
             </div>
 
             <div class="footer-section">
                 <h4>Yardımcı Bağlantılar</h4>
                 <ul>
-                    <li><a href="/help.php">Yardım</a></li>
-                    <li><a href="/faq.php">SSS</a></li>
-                    <li><a href="/privacy.php">Gizlilik Politikası</a></li>
-                    <li><a href="/terms.php">Kullanım Koşulları</a></li>
-                    <li><a href="/contact.php">İletişim</a></li>
+                    <li><a href="help.php">Yardım</a></li>
+                    <li><a href="faq.php">SSS</a></li>
+                    <li><a href="privacy.php">Gizlilik Politikası</a></li>
+                    <li><a href="terms.php">Kullanım Koşulları</a></li>
+                    <li><a href="contact.php">İletişim</a></li>
                 </ul>
             </div>
 
