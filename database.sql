@@ -188,6 +188,18 @@ CREATE TABLE exchange_rates (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY unique_pair (base_currency, target_currency, created_at)
 ) ENGINE = InnoDB;
+-- Şifre sıfırlama tablosu
+CREATE TABLE password_resets (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    token VARCHAR(64) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_token (token),
+    INDEX idx_expires (expires_at)
+) ENGINE = InnoDB;
 -- İndeksler
 CREATE INDEX idx_incomes_user_date ON incomes(user_id, income_date);
 CREATE INDEX idx_expenses_user_date ON expenses(user_id, due_date);
