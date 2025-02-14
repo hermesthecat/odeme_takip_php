@@ -198,10 +198,10 @@ function sanitizeOutput($data)
 function checkRateLimit()
 {
     $ip = $_SERVER['REMOTE_ADDR'];
-    $cache_key = "rate_limit_$ip";
-
-    if (apcu_exists($cache_key)) {
-        $data = apcu_fetch($cache_key);
+    $cache_file = sys_get_temp_dir() . "/rate_limit_$ip.txt";
+    
+    if (file_exists($cache_file)) {
+        $data = json_decode(file_get_contents($cache_file), true);
         if ($data['count'] >= API_RATE_LIMIT) {
             if (time() - $data['timestamp'] < 60) {
                 http_response_code(429);
@@ -216,14 +216,16 @@ function checkRateLimit()
         $data = ['count' => 1, 'timestamp' => time()];
     }
 
-    apcu_store($cache_key, $data, 60);
+    file_put_contents($cache_file, json_encode($data));
 }
 
 // API önbellek kontrolü
 function checkCache($key)
 {
-    if (apcu_exists($key)) {
-        $data = apcu_fetch($key);
+    $cache_file = sys_get_temp_dir() . "/cache_$key.txt";
+    
+    if (file_exists($cache_file)) {
+        $data = json_decode(file_get_contents($cache_file), true);
         if (time() - $data['timestamp'] < API_CACHE_TIME) {
             return $data['value'];
         }
@@ -233,11 +235,12 @@ function checkCache($key)
 
 function setCache($key, $value)
 {
+    $cache_file = sys_get_temp_dir() . "/cache_$key.txt";
     $data = [
         'value' => $value,
         'timestamp' => time()
     ];
-    apcu_store($key, $data, API_CACHE_TIME);
+    file_put_contents($cache_file, json_encode($data));
 }
 
 // API isteği başlatma
