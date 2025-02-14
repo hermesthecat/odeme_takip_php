@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  */
@@ -23,7 +24,7 @@ $csrf_token = generateToken();
                 <div class="trend"></div>
             </div>
         </div>
-        
+
         <div class="card" id="expenseCard">
             <div class="card-icon">
                 <i class="fas fa-arrow-down"></i>
@@ -34,7 +35,7 @@ $csrf_token = generateToken();
                 <div class="trend"></div>
             </div>
         </div>
-        
+
         <div class="card" id="balanceCard">
             <div class="card-icon">
                 <i class="fas fa-wallet"></i>
@@ -45,7 +46,7 @@ $csrf_token = generateToken();
                 <div class="trend"></div>
             </div>
         </div>
-        
+
         <div class="card" id="savingsCard">
             <div class="card-icon">
                 <i class="fas fa-piggy-bank"></i>
@@ -57,7 +58,7 @@ $csrf_token = generateToken();
             </div>
         </div>
     </div>
-    
+
     <!-- Grafikler -->
     <div class="charts-container">
         <div class="chart-card">
@@ -74,7 +75,7 @@ $csrf_token = generateToken();
             </div>
             <canvas id="incomeExpenseChart"></canvas>
         </div>
-        
+
         <div class="chart-card">
             <div class="chart-header">
                 <h3>Kategori Dağılımı</h3>
@@ -88,7 +89,7 @@ $csrf_token = generateToken();
             <canvas id="categoryChart"></canvas>
         </div>
     </div>
-    
+
     <!-- Son İşlemler ve Yaklaşan Ödemeler -->
     <div class="dashboard-bottom">
         <div class="recent-transactions">
@@ -102,7 +103,7 @@ $csrf_token = generateToken();
                 <div class="loading">Yükleniyor...</div>
             </div>
         </div>
-        
+
         <div class="upcoming-payments">
             <div class="section-header">
                 <h3>Yaklaşan Ödemeler</h3>
@@ -115,7 +116,7 @@ $csrf_token = generateToken();
             </div>
         </div>
     </div>
-    
+
     <!-- Döviz Kuru Widget'ı -->
     <div class="currency-widget" id="currencyWidget">
         <div class="widget-header">
@@ -126,7 +127,7 @@ $csrf_token = generateToken();
             <div class="loading">Yükleniyor...</div>
         </div>
     </div>
-    
+
     <!-- Hızlı İşlem Butonları -->
     <div class="quick-actions">
         <button onclick="window.location.href='/pages/income.php?action=add'" class="btn-floating" title="Gelir Ekle">
@@ -145,17 +146,17 @@ $csrf_token = generateToken();
 </div>
 
 <script>
-// CSRF token'ı JavaScript'e aktar
-const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
+    // CSRF token'ı JavaScript'e aktar
+    const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
 
-// Sayfa yüklendiğinde
-document.addEventListener('DOMContentLoaded', () => {
-    // Dashboard verilerini yükle
-    updateDashboard();
-    
-    // Her 5 dakikada bir güncelle
-    setInterval(updateDashboard, 300000);
-});
+    // Sayfa yüklendiğinde
+    document.addEventListener('DOMContentLoaded', () => {
+        // Dashboard verilerini yükle
+        updateDashboard();
+
+        // Her 5 dakikada bir güncelle
+        setInterval(updateDashboard, 300000);
+    });
 </script>
 
-<?php require_once 'includes/footer.php'; ?> 
+<?php require_once 'includes/footer.php'; ?>

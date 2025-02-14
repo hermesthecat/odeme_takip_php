@@ -1,5 +1,5 @@
     </main>
-    
+
     <!-- Footer -->
     <footer class="footer">
         <div class="footer-content">
@@ -7,7 +7,7 @@
                 <h4>Ödeme Takip</h4>
                 <p>Kişisel finans yönetimi için basit ve kullanışlı bir araç.</p>
             </div>
-            
+
             <div class="footer-section">
                 <h4>Hızlı Erişim</h4>
                 <ul>
@@ -18,7 +18,7 @@
                     <li><a href="/pages/reports.php">Raporlar</a></li>
                 </ul>
             </div>
-            
+
             <div class="footer-section">
                 <h4>Yardımcı Bağlantılar</h4>
                 <ul>
@@ -29,7 +29,7 @@
                     <li><a href="/contact.php">İletişim</a></li>
                 </ul>
             </div>
-            
+
             <div class="footer-section">
                 <h4>Bağlantıda Kalın</h4>
                 <div class="social-links">
@@ -41,30 +41,30 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="footer-bottom">
             <p>&copy; <?php echo date('Y'); ?> Ödeme Takip Sistemi - A. Kerem Gök</p>
             <p>Sürüm <?php echo defined('API_VERSION') ? API_VERSION : '1.0.0'; ?></p>
         </div>
     </footer>
-    
+
     <!-- Çevrimdışı Bildirimi -->
     <div id="offlineAlert" class="offline-alert" style="display: none;">
         <i class="fas fa-wifi-slash"></i>
         Çevrimdışı mod - İnternet bağlantısı yok
     </div>
-    
+
     <!-- Yükleniyor Göstergesi -->
     <div id="loadingIndicator" class="loading-indicator" style="display: none;">
         <div class="spinner"></div>
         <p>Yükleniyor...</p>
     </div>
-    
+
     <!-- CSRF Token -->
     <script>
         const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
     </script>
-    
+
     <!-- Service Worker -->
     <script>
         if ('serviceWorker' in navigator) {
@@ -77,5 +77,6 @@
                 });
         }
     </script>
-</body>
-</html> 
+    </body>
+
+    </html>

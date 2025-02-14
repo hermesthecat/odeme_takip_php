@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  */
@@ -136,7 +137,7 @@ $csrf_token = generateToken();
         </div>
         <form id="customReportForm" onsubmit="return handleCustomReport(event)">
             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-            
+
             <div class="form-group">
                 <label>Rapor Bileşenleri:</label>
                 <div class="checkbox-group">
@@ -190,14 +191,14 @@ $csrf_token = generateToken();
 </div>
 
 <script>
-// CSRF token'ı JavaScript'e aktar
-const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
+    // CSRF token'ı JavaScript'e aktar
+    const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
 
-// Tarih aralığı seçimi kontrolü
-document.getElementById('dateRange').addEventListener('change', function() {
-    const customDateRange = document.getElementById('customDateRange');
-    customDateRange.style.display = this.value === 'custom' ? 'block' : 'none';
-});
+    // Tarih aralığı seçimi kontrolü
+    document.getElementById('dateRange').addEventListener('change', function() {
+        const customDateRange = document.getElementById('customDateRange');
+        customDateRange.style.display = this.value === 'custom' ? 'block' : 'none';
+    });
 </script>
 
-<?php require_once '../includes/footer.php'; ?> 
+<?php require_once '../includes/footer.php'; ?>

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  * Fatura hatırlatıcıları API endpoint'i
@@ -45,7 +46,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     repeat_interval, currency
                 ) VALUES (?, ?, ?, ?, ?, ?)
             ");
-            
+
             $stmt->execute([
                 $user_id,
                 $data['title'],
@@ -56,7 +57,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             ]);
 
             logActivity($user_id, 'bill_reminder_add', "Yeni fatura hatırlatıcısı eklendi: {$data['title']}");
-            
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Fatura hatırlatıcısı başarıyla eklendi',
@@ -80,7 +81,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     repeat_interval = ?, currency = ?
                 WHERE id = ? AND user_id = ?
             ");
-            
+
             $stmt->execute([
                 $data['title'],
                 $data['amount'],
@@ -92,7 +93,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             ]);
 
             logActivity($user_id, 'bill_reminder_update', "Fatura hatırlatıcısı güncellendi: ID {$data['id']}");
-            
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Fatura hatırlatıcısı başarıyla güncellendi'
@@ -113,11 +114,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 DELETE FROM bill_reminders 
                 WHERE id = ? AND user_id = ?
             ");
-            
+
             $stmt->execute([$data['id'], $user_id]);
 
             logActivity($user_id, 'bill_reminder_delete', "Fatura hatırlatıcısı silindi: ID {$data['id']}");
-            
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Fatura hatırlatıcısı başarıyla silindi'
@@ -132,4 +133,4 @@ switch ($_SERVER['REQUEST_METHOD']) {
         http_response_code(405);
         echo json_encode(['error' => 'Geçersiz metod']);
         break;
-} 
+}

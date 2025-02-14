@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  * Gelir yönetimi API endpoint'i
@@ -43,7 +44,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 INSERT INTO incomes (user_id, amount, description, income_date, category, currency)
                 VALUES (?, ?, ?, ?, ?, ?)
             ");
-            
+
             $stmt->execute([
                 $user_id,
                 $data['amount'],
@@ -54,7 +55,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             ]);
 
             logActivity($user_id, 'income_add', "Yeni gelir eklendi: {$data['amount']} {$data['currency']}");
-            
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Gelir başarıyla eklendi',
@@ -77,7 +78,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 SET amount = ?, description = ?, income_date = ?, category = ?, currency = ?
                 WHERE id = ? AND user_id = ?
             ");
-            
+
             $stmt->execute([
                 $data['amount'],
                 $data['description'],
@@ -89,7 +90,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             ]);
 
             logActivity($user_id, 'income_update', "Gelir güncellendi: ID {$data['id']}");
-            
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Gelir başarıyla güncellendi'
@@ -110,11 +111,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 DELETE FROM incomes 
                 WHERE id = ? AND user_id = ?
             ");
-            
+
             $stmt->execute([$data['id'], $user_id]);
 
             logActivity($user_id, 'income_delete', "Gelir silindi: ID {$data['id']}");
-            
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Gelir başarıyla silindi'
@@ -129,4 +130,4 @@ switch ($_SERVER['REQUEST_METHOD']) {
         http_response_code(405);
         echo json_encode(['error' => 'Geçersiz metod']);
         break;
-} 
+}

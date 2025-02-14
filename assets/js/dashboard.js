@@ -40,9 +40,9 @@ async function updateSummaryCards() {
 async function updateIncomeExpenseChart() {
     try {
         const ctx = document.getElementById('incomeExpenseChart').getContext('2d');
-        
+
         // Son 6 ayın verilerini al
-        const months = Array.from({length: 6}, (_, i) => {
+        const months = Array.from({ length: 6 }, (_, i) => {
             const d = new Date();
             d.setMonth(d.getMonth() - i);
             return d.toLocaleString('tr-TR', { month: 'long' });
@@ -106,11 +106,11 @@ async function updateIncomeExpenseChart() {
 async function updateCategoryChart() {
     try {
         const ctx = document.getElementById('categoryChart').getContext('2d');
-        
+
         // Gider kategorilerini al
         const expenseResponse = await fetchAPI('/api/expense.php');
         const categoryData = {};
-        
+
         if (expenseResponse.success) {
             expenseResponse.data.forEach(expense => {
                 categoryData[expense.category] = (categoryData[expense.category] || 0) + parseFloat(expense.amount);
@@ -256,10 +256,10 @@ async function updateCurrencyRates() {
         container.innerHTML = '<div class="loading">Yükleniyor...</div>';
 
         const response = await fetchAPI('/api/currency.php');
-        
+
         if (response.success) {
             const { rates, currencies, last_update } = response.data;
-            
+
             const html = Object.entries(rates).map(([code, rate]) => `
                 <div class="currency-item">
                     <div class="currency-code">${code}</div>

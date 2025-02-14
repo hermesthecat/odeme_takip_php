@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  */
@@ -28,4 +29,4 @@ foreach ($_COOKIE as $key => $value) {
 
 // Giriş sayfasına yönlendir
 header('Location: /login.php');
-exit; 
+exit;

@@ -10,7 +10,7 @@ async function loadUpcomingBills() {
         container.innerHTML = '<div class="loading">Yükleniyor...</div>';
 
         const response = await fetchAPI('/api/bills.php?status=pending');
-        
+
         if (response.success) {
             if (response.data.length === 0) {
                 container.innerHTML = '<div class="no-data">Yaklaşan fatura bulunamadı</div>';
@@ -23,7 +23,7 @@ async function loadUpcomingBills() {
             container.innerHTML = bills.map(bill => {
                 const daysLeft = Math.ceil((new Date(bill.due_date) - new Date()) / (1000 * 60 * 60 * 24));
                 const urgencyClass = daysLeft <= 3 ? 'urgent' : daysLeft <= 7 ? 'warning' : '';
-                
+
                 return `
                     <div class="bill-item ${urgencyClass}">
                         <div class="bill-date">
@@ -69,7 +69,7 @@ async function loadBills() {
         if (currency !== 'all') params.append('currency', currency);
 
         const response = await fetchAPI(`/api/bills.php?${params.toString()}`);
-        
+
         if (response.success) {
             if (response.data.length === 0) {
                 table.innerHTML = '<tr><td colspan="7" class="no-data">Fatura kaydı bulunamadı</td></tr>';
@@ -122,14 +122,14 @@ function updateBillStats(data) {
     const monthlyTotal = data
         .filter(bill => new Date(bill.due_date).getMonth() === currentMonth)
         .reduce((sum, bill) => sum + parseFloat(bill.amount), 0);
-    
+
     document.getElementById('monthlyTotal').textContent = formatMoney(monthlyTotal);
 
     // Geciken ödemeler toplamı
     const overdueTotal = data
         .filter(bill => getBillStatus(bill) === 'overdue')
         .reduce((sum, bill) => sum + parseFloat(bill.amount), 0);
-    
+
     document.getElementById('overdueTotal').textContent = formatMoney(overdueTotal);
 
     // Aktif hatırlatıcılar
@@ -152,7 +152,7 @@ function getRepeatText(interval) {
 function getBillStatus(bill) {
     const now = new Date();
     const dueDate = new Date(bill.due_date);
-    
+
     if (dueDate < now) return 'overdue';
     return 'pending';
 }
@@ -170,7 +170,7 @@ function getBillStatusText(bill) {
 // Yeni fatura ekle
 async function handleAddBill(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);
@@ -209,10 +209,10 @@ async function handleAddBill(event) {
 async function editBill(id) {
     try {
         const response = await fetchAPI(`/api/bills.php?id=${id}`);
-        
+
         if (response.success) {
             const bill = response.data;
-            
+
             // Form alanlarını doldur
             document.getElementById('edit_id').value = bill.id;
             document.getElementById('edit_title').value = bill.title;
@@ -240,7 +240,7 @@ async function editBill(id) {
 // Fatura güncelleme
 async function handleEditBill(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);
@@ -370,7 +370,7 @@ async function markBillAsPaid(id) {
 // Sonraki fatura tarihini hesapla
 function calculateNextDueDate(currentDate, repeatInterval) {
     const date = new Date(currentDate);
-    
+
     switch (repeatInterval) {
         case 'monthly':
             date.setMonth(date.getMonth() + 1);

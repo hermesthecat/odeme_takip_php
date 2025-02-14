@@ -29,13 +29,13 @@ async function fetchAPI(url, options = {}) {
 }
 
 // Tema değiştirme
-document.getElementById('themeToggle')?.addEventListener('click', async function() {
+document.getElementById('themeToggle')?.addEventListener('click', async function () {
     const currentTheme = document.body.getAttribute('data-theme');
     const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-    
+
     document.body.setAttribute('data-theme', newTheme);
     document.cookie = `theme=${newTheme};path=/;max-age=31536000`; // 1 yıl
-    
+
     try {
         await fetchAPI('/api/user-preferences.php', {
             method: 'POST',
@@ -70,7 +70,7 @@ function formDataToJSON(formElement) {
 }
 
 // Sayfa yüklendiğinde
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Offline/Online durumu kontrolü
     window.addEventListener('online', updateOnlineStatus);
     window.addEventListener('offline', updateOnlineStatus);
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function updateOnlineStatus() {
     const status = navigator.onLine ? 'online' : 'offline';
     document.body.setAttribute('data-connection', status);
-    
+
     if (!navigator.onLine) {
         Swal.fire({
             icon: 'warning',

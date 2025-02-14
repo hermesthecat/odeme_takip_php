@@ -27,9 +27,9 @@ body[data-theme="dark"] {
     --bg-dark: #102027;
 
     /* Gölgeler */
-    --shadow-sm: 0 2px 4px rgba(0,0,0,0.2);
-    --shadow-md: 0 4px 8px rgba(0,0,0,0.3);
-    --shadow-lg: 0 8px 16px rgba(0,0,0,0.4);
+    --shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.2);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 16px rgba(0, 0, 0, 0.4);
 }
 
 /* Navbar Koyu Tema */
@@ -210,7 +210,7 @@ body[data-theme="dark"] .filters {
 /* Tema Geçiş Animasyonu */
 body {
     transition: background-color var(--transition-normal),
-                color var(--transition-normal);
+        color var(--transition-normal);
 }
 
 /* Erişilebilirlik İyileştirmeleri */
@@ -218,4 +218,4 @@ body[data-theme="dark"] .btn:focus,
 body[data-theme="dark"] .form-control:focus {
     outline: 2px solid var(--primary-color);
     outline-offset: 2px;
-} 
+}

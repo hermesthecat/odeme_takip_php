@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  */
@@ -73,8 +74,8 @@ $csrf_token = generateToken();
 </div>
 
 <script>
-// CSRF token'ı JavaScript'e aktar
-const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
+    // CSRF token'ı JavaScript'e aktar
+    const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
 </script>
 
-<?php require_once '../includes/footer.php'; ?> 
+<?php require_once '../includes/footer.php'; ?>

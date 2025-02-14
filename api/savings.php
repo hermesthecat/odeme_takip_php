@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  * Birikim hedefleri API endpoint'i
@@ -45,7 +46,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     description, target_date, currency
                 ) VALUES (?, ?, ?, ?, ?, ?)
             ");
-            
+
             $stmt->execute([
                 $user_id,
                 $data['target_amount'],
@@ -56,7 +57,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             ]);
 
             logActivity($user_id, 'savings_goal_add', "Yeni birikim hedefi eklendi: {$data['target_amount']} {$data['currency']}");
-            
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Birikim hedefi başarıyla eklendi',
@@ -80,7 +81,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     description = ?, target_date = ?, currency = ?
                 WHERE id = ? AND user_id = ?
             ");
-            
+
             $stmt->execute([
                 $data['target_amount'],
                 $data['current_amount'],
@@ -92,7 +93,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             ]);
 
             logActivity($user_id, 'savings_goal_update', "Birikim hedefi güncellendi: ID {$data['id']}");
-            
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Birikim hedefi başarıyla güncellendi'
@@ -113,11 +114,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 DELETE FROM savings_goals 
                 WHERE id = ? AND user_id = ?
             ");
-            
+
             $stmt->execute([$data['id'], $user_id]);
 
             logActivity($user_id, 'savings_goal_delete', "Birikim hedefi silindi: ID {$data['id']}");
-            
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Birikim hedefi başarıyla silindi'
@@ -132,4 +133,4 @@ switch ($_SERVER['REQUEST_METHOD']) {
         http_response_code(405);
         echo json_encode(['error' => 'Geçersiz metod']);
         break;
-} 
+}

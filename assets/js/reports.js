@@ -16,7 +16,7 @@ async function loadReport() {
         if (dateRange === 'custom') {
             startDate = document.getElementById('startDate').value;
             endDate = document.getElementById('endDate').value;
-            
+
             if (!startDate || !endDate) {
                 throw new Error('Lütfen tarih aralığı seçin');
             }
@@ -36,7 +36,7 @@ async function loadReport() {
         });
 
         const response = await fetchAPI(`/api/reports.php?${params.toString()}`);
-        
+
         if (response.success) {
             // Rapor özetini güncelle
             updateReportSummary(response.data.summary);
@@ -108,7 +108,7 @@ function updateTrendIndicator(elementId, trend) {
 // Ana grafiği güncelle
 function updateMainChart(data) {
     const ctx = document.getElementById('mainChart').getContext('2d');
-    
+
     // Mevcut grafiği temizle
     if (window.mainChart) {
         window.mainChart.destroy();
@@ -121,7 +121,7 @@ function updateMainChart(data) {
 // Ana grafik oluştur
 function createMainChart(ctx, data) {
     const reportType = document.getElementById('reportType').value;
-    
+
     switch (reportType) {
         case 'overview':
             return createMixedChart(ctx, {
@@ -196,7 +196,7 @@ function createMainChart(ctx, data) {
 // Kategori grafiğini güncelle
 function updateCategoryChart(data) {
     const ctx = document.getElementById('categoryChart').getContext('2d');
-    
+
     // Mevcut grafiği temizle
     if (window.categoryChart) {
         window.categoryChart.destroy();
@@ -214,7 +214,7 @@ function updateCategoryChart(data) {
 // Trend grafiğini güncelle
 function updateTrendChart(data) {
     const ctx = document.getElementById('trendChart').getContext('2d');
-    
+
     // Mevcut grafiği temizle
     if (window.trendChart) {
         window.trendChart.destroy();
@@ -237,7 +237,7 @@ function updateTrendChart(data) {
 // Detay tablosunu güncelle
 function updateDetailsTable(data) {
     const table = document.getElementById('detailsTable').querySelector('tbody');
-    
+
     if (data.length === 0) {
         table.innerHTML = '<tr><td colspan="6" class="no-data">Kayıt bulunamadı</td></tr>';
         return;
@@ -285,7 +285,7 @@ async function exportReport(format) {
         }
 
         const response = await fetchAPI(`/api/reports.php/export?${params.toString()}`);
-        
+
         if (response.success) {
             // Dosyayı indir
             const link = document.createElement('a');
@@ -306,7 +306,7 @@ async function exportReport(format) {
 // Özel rapor oluştur
 async function handleCustomReport(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);

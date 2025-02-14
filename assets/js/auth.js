@@ -18,7 +18,7 @@ async function checkSession() {
 // Giriş formu işleme
 async function handleLogin(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);
@@ -52,7 +52,7 @@ async function handleLogin(event) {
 // Kayıt formu işleme
 async function handleRegister(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);
@@ -119,7 +119,7 @@ async function handleLogout() {
 // Şifre sıfırlama isteği
 async function handlePasswordReset(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);
@@ -158,7 +158,7 @@ async function handlePasswordReset(event) {
 // Şifre değiştirme
 async function handlePasswordChange(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);

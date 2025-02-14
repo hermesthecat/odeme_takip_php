@@ -21,7 +21,7 @@ async function loadIncomes() {
         if (currency !== 'all') params.append('currency', currency);
 
         const response = await fetchAPI(`/api/income.php?${params.toString()}`);
-        
+
         if (response.success) {
             if (response.data.length === 0) {
                 table.innerHTML = '<tr><td colspan="6" class="no-data">Gelir kaydı bulunamadı</td></tr>';
@@ -57,7 +57,7 @@ async function loadIncomes() {
 // Yeni gelir ekle
 async function handleAddIncome(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);
@@ -95,10 +95,10 @@ async function handleAddIncome(event) {
 async function editIncome(id) {
     try {
         const response = await fetchAPI(`/api/income.php?id=${id}`);
-        
+
         if (response.success) {
             const income = response.data;
-            
+
             // Form alanlarını doldur
             document.getElementById('edit_id').value = income.id;
             document.getElementById('edit_amount').value = income.amount;
@@ -126,7 +126,7 @@ async function editIncome(id) {
 // Gelir güncelleme
 async function handleEditIncome(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);
@@ -227,7 +227,7 @@ function filterIncomes() {
 }
 
 // Özel tarih aralığı kontrolü
-document.getElementById('dateRange')?.addEventListener('change', function() {
+document.getElementById('dateRange')?.addEventListener('change', function () {
     const customDateRange = document.getElementById('customDateRange');
     if (customDateRange) {
         customDateRange.style.display = this.value === 'custom' ? 'block' : 'none';

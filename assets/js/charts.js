@@ -141,10 +141,10 @@ function createMixedChart(ctx, data, options = {}) {
                 type: dataset.type || 'bar',
                 label: dataset.label,
                 data: dataset.data,
-                backgroundColor: dataset.type === 'line' ? 
-                    chartBackgroundColors[dataset.color || 'primary'] : 
+                backgroundColor: dataset.type === 'line' ?
+                    chartBackgroundColors[dataset.color || 'primary'] :
                     chartColors[dataset.color || 'primary'],
-                borderColor: dataset.type === 'line' ? 
+                borderColor: dataset.type === 'line' ?
                     chartColors[dataset.color || 'primary'] : undefined,
                 tension: dataset.type === 'line' ? 0.4 : undefined,
                 ...dataset
@@ -180,14 +180,14 @@ function updateChart(chart, newData, newOptions = {}) {
     if (newData.labels) {
         chart.data.labels = newData.labels;
     }
-    
+
     if (newData.datasets) {
         chart.data.datasets = newData.datasets.map(dataset => ({
             ...dataset,
-            backgroundColor: dataset.type === 'line' ? 
-                chartBackgroundColors[dataset.color || 'primary'] : 
+            backgroundColor: dataset.type === 'line' ?
+                chartBackgroundColors[dataset.color || 'primary'] :
                 chartColors[dataset.color || 'primary'],
-            borderColor: dataset.type === 'line' ? 
+            borderColor: dataset.type === 'line' ?
                 chartColors[dataset.color || 'primary'] : undefined
         }));
     }
@@ -243,7 +243,7 @@ function formatChartDate(date, format = 'short') {
         medium: { day: 'numeric', month: 'short', year: 'numeric' },
         long: { day: 'numeric', month: 'long', year: 'numeric' }
     };
-    
+
     return new Date(date).toLocaleDateString('tr-TR', options[format]);
 }
 
@@ -256,7 +256,7 @@ function formatChartPercentage(value) {
 function createCustomTooltip(tooltipModel) {
     return {
         callbacks: {
-            label: function(context) {
+            label: function (context) {
                 let label = context.dataset.label || '';
                 if (label) {
                     label += ': ';

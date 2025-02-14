@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  */
@@ -57,7 +58,7 @@ $csrf_token = generateToken();
         </div>
         <form id="addSavingForm" onsubmit="return handleAddSaving(event)">
             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-            
+
             <div class="form-group">
                 <label for="description">Hedef Adı:</label>
                 <input type="text" id="description" name="description" required>
@@ -106,7 +107,7 @@ $csrf_token = generateToken();
         <form id="editSavingForm" onsubmit="return handleEditSaving(event)">
             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
             <input type="hidden" name="id" id="edit_id">
-            
+
             <div class="form-group">
                 <label for="edit_description">Hedef Adı:</label>
                 <input type="text" id="edit_description" name="description" required>
@@ -155,7 +156,7 @@ $csrf_token = generateToken();
         <form id="quickUpdateForm" onsubmit="return handleQuickUpdate(event)">
             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
             <input type="hidden" name="id" id="quick_update_id">
-            
+
             <div class="form-group">
                 <label for="quick_amount">Yeni Birikim Miktarı:</label>
                 <input type="number" id="quick_amount" name="amount" step="0.01" required>
@@ -170,8 +171,8 @@ $csrf_token = generateToken();
 </div>
 
 <script>
-// CSRF token'ı JavaScript'e aktar
-const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
+    // CSRF token'ı JavaScript'e aktar
+    const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
 </script>
 
-<?php require_once '../includes/footer.php'; ?> 
+<?php require_once '../includes/footer.php'; ?>

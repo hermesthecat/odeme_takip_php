@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  */
@@ -21,7 +22,7 @@ $csrf_token = generateToken();
             <h2>Görünüm</h2>
             <form id="appearanceForm" onsubmit="return handleAppearanceUpdate(event)">
                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                
+
                 <div class="form-group">
                     <label for="theme">
                         <i class="fas fa-palette"></i>
@@ -37,7 +38,7 @@ $csrf_token = generateToken();
                         <option value="auto">Sistem Teması</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="language">
                         <i class="fas fa-language"></i>
@@ -48,7 +49,7 @@ $csrf_token = generateToken();
                         <option value="en" disabled>English (Yakında)</option>
                     </select>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="currency">
                         <i class="fas fa-money-bill"></i>
@@ -69,21 +70,21 @@ $csrf_token = generateToken();
             <h2>Bildirimler</h2>
             <form id="notificationForm" onsubmit="return handleNotificationUpdate(event)">
                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                
+
                 <div class="form-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="email_notifications" value="1" checked>
                         <span>E-posta Bildirimleri</span>
                     </label>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="push_notifications" value="1" checked>
                         <span>Tarayıcı Bildirimleri</span>
                     </label>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="notification_time">
                         <i class="fas fa-clock"></i>
@@ -103,7 +104,7 @@ $csrf_token = generateToken();
             <h2>Veri ve Gizlilik</h2>
             <form id="dataForm" onsubmit="return handleDataUpdate(event)">
                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                
+
                 <div class="form-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="analytics" value="1" checked>
@@ -111,7 +112,7 @@ $csrf_token = generateToken();
                     </label>
                     <p class="help-text">Uygulamamızı geliştirmemize yardımcı olun</p>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="backup" value="1" checked>
@@ -119,13 +120,13 @@ $csrf_token = generateToken();
                     </label>
                     <p class="help-text">Her gün verilerinizi yedekleyin</p>
                 </div>
-                
+
                 <div class="form-actions">
                     <button type="button" class="btn-secondary" onclick="exportData()">
                         <i class="fas fa-download"></i>
                         Verileri İndir
                     </button>
-                    
+
                     <button type="button" class="btn-secondary" onclick="importData()">
                         <i class="fas fa-upload"></i>
                         Verileri Yükle
@@ -139,7 +140,7 @@ $csrf_token = generateToken();
             <h2>Güvenlik</h2>
             <form id="securityForm" onsubmit="return handleSecurityUpdate(event)">
                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                
+
                 <div class="form-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="two_factor" value="1">
@@ -147,7 +148,7 @@ $csrf_token = generateToken();
                     </label>
                     <p class="help-text">Yakında kullanıma sunulacak</p>
                 </div>
-                
+
                 <div class="form-group">
                     <label class="checkbox-label">
                         <input type="checkbox" name="session_logout" value="1" checked>
@@ -166,7 +167,7 @@ $csrf_token = generateToken();
 <!-- CSRF Token -->
 <script>
     const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
-    
+
     // Form değişikliklerini otomatik kaydet
     document.querySelectorAll('form').forEach(form => {
         form.querySelectorAll('input, select').forEach(input => {
@@ -177,15 +178,15 @@ $csrf_token = generateToken();
                     'notificationForm': handleNotificationUpdate,
                     'dataForm': handleDataUpdate,
                     'securityForm': handleSecurityUpdate
-                }[formId];
-                
+                } [formId];
+
                 if (handler) {
                     handler(new Event('change'));
                 }
             });
         });
     });
-    
+
     // Veri dışa aktarma
     function exportData() {
         Swal.fire({
@@ -197,58 +198,58 @@ $csrf_token = generateToken();
                 Swal.showLoading();
             }
         });
-        
+
         fetch('/api/settings.php/export', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                csrf_token: CSRF_TOKEN
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    csrf_token: CSRF_TOKEN
+                })
             })
-        })
-        .then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'odeme-takip-yedek.json';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-            document.body.removeChild(a);
-            
-            Swal.fire({
-                icon: 'success',
-                title: 'Başarılı',
-                text: 'Verileriniz başarıyla indirildi'
+            .then(response => response.blob())
+            .then(blob => {
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'odeme-takip-yedek.json';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Başarılı',
+                    text: 'Verileriniz başarıyla indirildi'
+                });
+            })
+            .catch(error => {
+                console.error('Veri dışa aktarma hatası:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hata',
+                    text: 'Veriler indirilirken bir hata oluştu'
+                });
             });
-        })
-        .catch(error => {
-            console.error('Veri dışa aktarma hatası:', error);
-            Swal.fire({
-                icon: 'error',
-                title: 'Hata',
-                text: 'Veriler indirilirken bir hata oluştu'
-            });
-        });
     }
-    
+
     // Veri içe aktarma
     function importData() {
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'application/json';
-        
+
         input.onchange = e => {
             const file = e.target.files[0];
             if (!file) return;
-            
+
             const reader = new FileReader();
             reader.onload = event => {
                 try {
                     const data = JSON.parse(event.target.result);
-                    
+
                     Swal.fire({
                         title: 'Emin misiniz?',
                         text: 'Mevcut verilerinizin üzerine yazılacak',
@@ -259,21 +260,21 @@ $csrf_token = generateToken();
                         showLoaderOnConfirm: true,
                         preConfirm: () => {
                             return fetch('/api/settings.php/import', {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                },
-                                body: JSON.stringify({
-                                    data: data,
-                                    csrf_token: CSRF_TOKEN
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        data: data,
+                                        csrf_token: CSRF_TOKEN
+                                    })
                                 })
-                            })
-                            .then(response => {
-                                if (!response.ok) {
-                                    throw new Error('Veri yükleme hatası');
-                                }
-                                return response.json();
-                            });
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error('Veri yükleme hatası');
+                                    }
+                                    return response.json();
+                                });
                         }
                     }).then(result => {
                         if (result.isConfirmed) {
@@ -302,10 +303,10 @@ $csrf_token = generateToken();
             };
             reader.readAsText(file);
         };
-        
+
         input.click();
     }
-    
+
     // Diğer oturumları sonlandır
     function logoutOtherSessions() {
         Swal.fire({
@@ -318,37 +319,37 @@ $csrf_token = generateToken();
         }).then(result => {
             if (result.isConfirmed) {
                 fetch('/api/auth.php/sessions', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        csrf_token: CSRF_TOKEN
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            csrf_token: CSRF_TOKEN
+                        })
                     })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.success) {
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Başarılı',
+                                text: 'Diğer oturumlar sonlandırıldı'
+                            });
+                        } else {
+                            throw new Error(data.error);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Oturum sonlandırma hatası:', error);
                         Swal.fire({
-                            icon: 'success',
-                            title: 'Başarılı',
-                            text: 'Diğer oturumlar sonlandırıldı'
+                            icon: 'error',
+                            title: 'Hata',
+                            text: 'Oturumlar sonlandırılırken bir hata oluştu'
                         });
-                    } else {
-                        throw new Error(data.error);
-                    }
-                })
-                .catch(error => {
-                    console.error('Oturum sonlandırma hatası:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Hata',
-                        text: 'Oturumlar sonlandırılırken bir hata oluştu'
                     });
-                });
             }
         });
     }
 </script>
 
-<?php require_once 'includes/footer.php'; ?> 
+<?php require_once 'includes/footer.php'; ?>

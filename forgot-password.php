@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  */
@@ -22,19 +23,19 @@ $csrf_token = generateToken();
             <h1>Şifremi Unuttum</h1>
             <p>Şifre sıfırlama bağlantısı için e-posta adresinizi girin</p>
         </div>
-        
+
         <form id="forgotPasswordForm" onsubmit="return handlePasswordReset(event)">
             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-            
+
             <div class="form-group">
                 <label for="email">
                     <i class="fas fa-envelope"></i>
                     E-posta
                 </label>
                 <input type="email" id="email" name="email" required
-                       placeholder="E-posta adresinizi girin">
+                    placeholder="E-posta adresinizi girin">
             </div>
-            
+
             <div class="form-actions">
                 <button type="submit" class="btn-primary btn-block">
                     <i class="fas fa-paper-plane"></i>
@@ -42,7 +43,7 @@ $csrf_token = generateToken();
                 </button>
             </div>
         </form>
-        
+
         <div class="auth-footer">
             <p>Şifrenizi hatırladınız mı?</p>
             <a href="/login.php" class="btn-secondary btn-block">
@@ -58,4 +59,4 @@ $csrf_token = generateToken();
     const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
 </script>
 
-<?php require_once 'includes/footer.php'; ?> 
+<?php require_once 'includes/footer.php'; ?>

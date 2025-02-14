@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  */
@@ -21,7 +22,7 @@ $csrf_token = generateToken();
             <h2>Kişisel Bilgiler</h2>
             <form id="profileForm" onsubmit="return handleProfileUpdate(event)">
                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                
+
                 <div class="form-row">
                     <div class="form-group">
                         <label for="first_name">
@@ -29,38 +30,38 @@ $csrf_token = generateToken();
                             Ad
                         </label>
                         <input type="text" id="first_name" name="first_name" required
-                               value="<?php echo htmlspecialchars($user['first_name'] ?? ''); ?>">
+                            value="<?php echo htmlspecialchars($user['first_name'] ?? ''); ?>">
                     </div>
-                    
+
                     <div class="form-group">
                         <label for="last_name">
                             <i class="fas fa-user"></i>
                             Soyad
                         </label>
                         <input type="text" id="last_name" name="last_name" required
-                               value="<?php echo htmlspecialchars($user['last_name'] ?? ''); ?>">
+                            value="<?php echo htmlspecialchars($user['last_name'] ?? ''); ?>">
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="email">
                         <i class="fas fa-envelope"></i>
                         E-posta
                     </label>
                     <input type="email" id="email" name="email" required
-                           value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>">
+                        value="<?php echo htmlspecialchars($user['email'] ?? ''); ?>">
                 </div>
-                
+
                 <div class="form-group">
                     <label for="username">
                         <i class="fas fa-user-circle"></i>
                         Kullanıcı Adı
                     </label>
                     <input type="text" id="username" name="username" required
-                           value="<?php echo htmlspecialchars($user['username'] ?? ''); ?>"
-                           readonly>
+                        value="<?php echo htmlspecialchars($user['username'] ?? ''); ?>"
+                        readonly>
                 </div>
-                
+
                 <div class="form-actions">
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-save"></i>
@@ -75,7 +76,7 @@ $csrf_token = generateToken();
             <h2>Şifre Değiştirme</h2>
             <form id="passwordForm" onsubmit="return handlePasswordChange(event)">
                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-                
+
                 <div class="form-group">
                     <label for="current_password">
                         <i class="fas fa-lock"></i>
@@ -88,7 +89,7 @@ $csrf_token = generateToken();
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="new_password">
                         <i class="fas fa-key"></i>
@@ -96,14 +97,14 @@ $csrf_token = generateToken();
                     </label>
                     <div class="password-input">
                         <input type="password" id="new_password" name="new_password" required
-                               pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
-                               title="En az 8 karakter, bir harf ve bir rakam içermelidir">
+                            pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$"
+                            title="En az 8 karakter, bir harf ve bir rakam içermelidir">
                         <button type="button" class="toggle-password" tabindex="-1">
                             <i class="fas fa-eye"></i>
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="form-group">
                     <label for="new_password_confirm">
                         <i class="fas fa-key"></i>
@@ -116,7 +117,7 @@ $csrf_token = generateToken();
                         </button>
                     </div>
                 </div>
-                
+
                 <div class="form-actions">
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-key"></i>
@@ -144,13 +145,13 @@ $csrf_token = generateToken();
 <!-- CSRF Token -->
 <script>
     const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
-    
+
     // Şifre göster/gizle
     document.querySelectorAll('.toggle-password').forEach(button => {
         button.addEventListener('click', function() {
             const input = this.parentElement.querySelector('input');
             const icon = this.querySelector('i');
-            
+
             if (input.type === 'password') {
                 input.type = 'text';
                 icon.classList.remove('fa-eye');
@@ -162,7 +163,7 @@ $csrf_token = generateToken();
             }
         });
     });
-    
+
     // Şifre eşleşme kontrolü
     document.getElementById('new_password_confirm').addEventListener('input', function() {
         const password = document.getElementById('new_password').value;
@@ -172,7 +173,7 @@ $csrf_token = generateToken();
             this.setCustomValidity('');
         }
     });
-    
+
     // Hesap silme onayı
     function confirmDeleteAccount() {
         Swal.fire({
@@ -193,4 +194,4 @@ $csrf_token = generateToken();
     }
 </script>
 
-<?php require_once 'includes/footer.php'; ?> 
+<?php require_once 'includes/footer.php'; ?>

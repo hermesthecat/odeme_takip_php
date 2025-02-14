@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  * Döviz kuru API endpoint'i
@@ -77,7 +78,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             }
 
             $rates = getExchangeRates();
-            
+
             if (empty($rates)) {
                 throw new Exception('Döviz kurları alınamadı');
             }
@@ -115,4 +116,4 @@ switch ($_SERVER['REQUEST_METHOD']) {
         http_response_code(405);
         echo json_encode(['error' => 'Geçersiz metod']);
         break;
-} 
+}

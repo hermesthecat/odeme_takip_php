@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  */
@@ -107,7 +108,7 @@ $csrf_token = generateToken();
         </div>
         <form id="addBillForm" onsubmit="return handleAddBill(event)">
             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
-            
+
             <div class="form-group">
                 <label for="title">Başlık:</label>
                 <input type="text" id="title" name="title" required>
@@ -161,7 +162,7 @@ $csrf_token = generateToken();
         <form id="editBillForm" onsubmit="return handleEditBill(event)">
             <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
             <input type="hidden" name="id" id="edit_id">
-            
+
             <div class="form-group">
                 <label for="edit_title">Başlık:</label>
                 <input type="text" id="edit_title" name="title" required>
@@ -206,8 +207,8 @@ $csrf_token = generateToken();
 </div>
 
 <script>
-// CSRF token'ı JavaScript'e aktar
-const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
+    // CSRF token'ı JavaScript'e aktar
+    const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
 </script>
 
-<?php require_once '../includes/footer.php'; ?> 
+<?php require_once '../includes/footer.php'; ?>

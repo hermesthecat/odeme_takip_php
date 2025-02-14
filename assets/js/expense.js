@@ -23,7 +23,7 @@ async function loadExpenses() {
         if (currency !== 'all') params.append('currency', currency);
 
         const response = await fetchAPI(`/api/expense.php?${params.toString()}`);
-        
+
         if (response.success) {
             if (response.data.length === 0) {
                 table.innerHTML = '<tr><td colspan="8" class="no-data">Gider kaydı bulunamadı</td></tr>';
@@ -80,7 +80,7 @@ function getStatusText(status) {
 // Yeni gider ekle
 async function handleAddExpense(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);
@@ -123,10 +123,10 @@ async function handleAddExpense(event) {
 async function editExpense(id) {
     try {
         const response = await fetchAPI(`/api/expense.php?id=${id}`);
-        
+
         if (response.success) {
             const expense = response.data;
-            
+
             // Form alanlarını doldur
             document.getElementById('edit_id').value = expense.id;
             document.getElementById('edit_amount').value = expense.amount;
@@ -156,7 +156,7 @@ async function editExpense(id) {
 // Gider güncelleme
 async function handleEditExpense(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);
@@ -297,7 +297,7 @@ function filterExpenses() {
 }
 
 // Özel tarih aralığı kontrolü
-document.getElementById('dateRange')?.addEventListener('change', function() {
+document.getElementById('dateRange')?.addEventListener('change', function () {
     const customDateRange = document.getElementById('customDateRange');
     if (customDateRange) {
         customDateRange.style.display = this.value === 'custom' ? 'block' : 'none';
@@ -305,7 +305,7 @@ document.getElementById('dateRange')?.addEventListener('change', function() {
 });
 
 // Durum değişikliğinde ödeme tarihi kontrolü
-document.getElementById('status')?.addEventListener('change', function() {
+document.getElementById('status')?.addEventListener('change', function () {
     const paymentDateField = document.getElementById('payment_date');
     if (paymentDateField) {
         paymentDateField.required = this.value === 'paid';

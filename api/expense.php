@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  * Gider yönetimi API endpoint'i
@@ -45,7 +46,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     payment_date, category, status, currency
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ");
-            
+
             $stmt->execute([
                 $user_id,
                 $data['amount'],
@@ -58,7 +59,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             ]);
 
             logActivity($user_id, 'expense_add', "Yeni gider eklendi: {$data['amount']} {$data['currency']}");
-            
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Gider başarıyla eklendi',
@@ -82,7 +83,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     payment_date = ?, category = ?, status = ?, currency = ?
                 WHERE id = ? AND user_id = ?
             ");
-            
+
             $stmt->execute([
                 $data['amount'],
                 $data['description'],
@@ -96,7 +97,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
             ]);
 
             logActivity($user_id, 'expense_update', "Gider güncellendi: ID {$data['id']}");
-            
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Gider başarıyla güncellendi'
@@ -117,11 +118,11 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 DELETE FROM expenses 
                 WHERE id = ? AND user_id = ?
             ");
-            
+
             $stmt->execute([$data['id'], $user_id]);
 
             logActivity($user_id, 'expense_delete', "Gider silindi: ID {$data['id']}");
-            
+
             echo json_encode([
                 'success' => true,
                 'message' => 'Gider başarıyla silindi'
@@ -136,4 +137,4 @@ switch ($_SERVER['REQUEST_METHOD']) {
         http_response_code(405);
         echo json_encode(['error' => 'Geçersiz metod']);
         break;
-} 
+}

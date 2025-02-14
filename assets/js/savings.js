@@ -10,7 +10,7 @@ async function loadSavings() {
         grid.innerHTML = '<div class="loading">Yükleniyor...</div>';
 
         const response = await fetchAPI('/api/savings.php');
-        
+
         if (response.success) {
             if (response.data.length === 0) {
                 grid.innerHTML = '<div class="no-data">Birikim hedefi bulunamadı</div>';
@@ -21,7 +21,7 @@ async function loadSavings() {
                 const progress = (saving.current_amount / saving.target_amount) * 100;
                 const remainingAmount = saving.target_amount - saving.current_amount;
                 const daysLeft = Math.ceil((new Date(saving.target_date) - new Date()) / (1000 * 60 * 60 * 24));
-                
+
                 return `
                     <div class="saving-card">
                         <div class="saving-header">
@@ -91,7 +91,7 @@ function updateSavingsStats(data) {
     const totalProgress = data.reduce((sum, item) => {
         return sum + ((item.current_amount / item.target_amount) * 100);
     }, 0) / (data.length || 1);
-    
+
     const progressCircle = document.getElementById('achievementRate');
     progressCircle.querySelector('.progress-text').textContent = `%${totalProgress.toFixed(1)}`;
     progressCircle.style.setProperty('--progress', totalProgress);
@@ -104,7 +104,7 @@ function updateSavingsStats(data) {
 // Yeni birikim hedefi ekle
 async function handleAddSaving(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);
@@ -142,10 +142,10 @@ async function handleAddSaving(event) {
 async function editSaving(id) {
     try {
         const response = await fetchAPI(`/api/savings.php?id=${id}`);
-        
+
         if (response.success) {
             const saving = response.data;
-            
+
             // Form alanlarını doldur
             document.getElementById('edit_id').value = saving.id;
             document.getElementById('edit_description').value = saving.description;
@@ -173,7 +173,7 @@ async function editSaving(id) {
 // Birikim hedefi güncelleme
 async function handleEditSaving(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);
@@ -257,13 +257,13 @@ async function deleteSaving(id) {
 async function showQuickUpdate(id) {
     try {
         const response = await fetchAPI(`/api/savings.php?id=${id}`);
-        
+
         if (response.success) {
             const saving = response.data;
-            
+
             document.getElementById('quick_update_id').value = saving.id;
             document.getElementById('quick_amount').value = saving.current_amount;
-            
+
             document.getElementById('quickUpdateModal').classList.add('show');
         } else {
             throw new Error(response.error || 'Birikim hedefi bilgileri alınamadı');
@@ -282,7 +282,7 @@ async function showQuickUpdate(id) {
 // Hızlı güncelleme işlemi
 async function handleQuickUpdate(event) {
     event.preventDefault();
-    
+
     try {
         const form = event.target;
         const data = formDataToJSON(form);

@@ -57,7 +57,7 @@ self.addEventListener('activate', event => {
                     .map(cacheName => caches.delete(cacheName))
             );
         })
-        .then(() => self.clients.claim())
+            .then(() => self.clients.claim())
     );
 });
 
@@ -173,7 +173,7 @@ async function syncExpenses() {
     try {
         const db = await openDB();
         const expenses = await db.getAll('offline-expenses');
-        
+
         for (const expense of expenses) {
             try {
                 const response = await fetch('/api/expenses.php', {
