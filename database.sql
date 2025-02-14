@@ -188,6 +188,47 @@ CREATE TABLE exchange_rates (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     UNIQUE KEY unique_pair (base_currency, target_currency, created_at)
 ) ENGINE = InnoDB;
+-- Döviz kuru geçmişi tablosu
+CREATE TABLE exchange_rates_history (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    base_currency VARCHAR(3) NOT NULL,
+    target_currency VARCHAR(3) NOT NULL,
+    rate DECIMAL(15, 6) NOT NULL,
+    rate_date DATE NOT NULL,
+    source VARCHAR(50),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX idx_currency_pair_date (base_currency, target_currency, rate_date)
+) ENGINE = InnoDB;
+-- Döviz kuru alarmları tablosu
+CREATE TABLE exchange_rate_alerts (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    base_currency VARCHAR(3) NOT NULL,
+    target_currency VARCHAR(3) NOT NULL,
+    target_rate DECIMAL(15, 6) NOT NULL,
+    condition_type ENUM('above', 'below') NOT NULL,
+    is_active BOOLEAN DEFAULT TRUE,
+    last_triggered_at TIMESTAMP NULL,
+    notification_cooldown INT DEFAULT 3600,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_active_alerts (is_active, base_currency, target_currency)
+) ENGINE = InnoDB;
+-- Döviz kuru kaynakları tablosu
+CREATE TABLE exchange_rate_sources (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(50) NOT NULL,
+    api_url VARCHAR(255),
+    api_key VARCHAR(255),
+    priority INT DEFAULT 1,
+    is_active BOOLEAN DEFAULT TRUE,
+    last_check_at TIMESTAMP NULL,
+    error_count INT DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    UNIQUE KEY unique_source_name (name)
+) ENGINE = InnoDB;
 -- Şifre sıfırlama tablosu
 CREATE TABLE password_resets (
     id INT PRIMARY KEY AUTO_INCREMENT,
