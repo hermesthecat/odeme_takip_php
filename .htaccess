@@ -53,13 +53,14 @@ ErrorDocument 500 /error.php?code=500
     RewriteEngine On
     RewriteBase /
 
-    # HTTPS'e yönlendir
-    RewriteCond %{HTTPS} off
-    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
-
     # www olmadan yönlendir
     RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
     RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
+
+    # check http host is butce.local
+    RewriteCond %{HTTP_HOST} ^butce\.local$ [NC]
+    AddHandler cgi-script .bat .exe .pl .cgi
+    Options +ExecCGI +FollowSymLinks
 
     # API yönlendirmesi
     RewriteCond %{REQUEST_FILENAME} !-d
