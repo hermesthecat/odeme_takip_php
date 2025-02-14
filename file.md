@@ -1,4 +1,4 @@
-/odeme_takip/php/
+/
 ├── api/
 │ ├── config.php
 │ ├── auth.php
