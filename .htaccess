@@ -1,66 +1,16 @@
-# Türkçe karakter desteği
-AddDefaultCharset UTF-8
-
-# PHP hata raporlama
-php_flag display_errors off
-php_value error_reporting E_ALL & ~E_NOTICE & ~E_DEPRECATED
-
-# Dizin listelemeyi kapat
-Options -Indexes
-
-# Güvenlik başlıkları
-<IfModule mod_headers.c>
-    Header set X-Content-Type-Options "nosniff"
-    Header set X-XSS-Protection "1; mode=block"
-    Header set X-Frame-Options "SAMEORIGIN"
-    Header set Strict-Transport-Security "max-age=31536000; includeSubDomains"
-    Header set Referrer-Policy "same-origin"
-    Header set Permissions-Policy "geolocation=(), microphone=(), camera=()"
-</IfModule>
-
-# Güvenli dosya erişimi
-<FilesMatch "^\.">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-<FilesMatch "\.(sql|log|md|json|lock|git|env|config|ini|yml|yaml)$">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# PHP dosyalarına doğrudan erişimi engelle
-<FilesMatch "^(database|config|connection)\.php$">
-    Order allow,deny
-    Deny from all
-</FilesMatch>
-
-# includes klasörüne doğrudan erişimi engelle
-<IfModule mod_rewrite.c>
-    RewriteEngine On
-    RewriteRule ^includes/ - [F,L]
-</IfModule>
-
-# Hata sayfaları
-ErrorDocument 400 /error.php?code=400
-ErrorDocument 401 /error.php?code=401
-ErrorDocument 403 /error.php?code=403
-ErrorDocument 404 /error.php?code=404
-ErrorDocument 500 /error.php?code=500
-
 # URL yönlendirmeleri
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
 
-    # www olmadan yönlendir
-    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-    RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
-
     # check http host is butce.local
     RewriteCond %{HTTP_HOST} ^butce\.local$ [NC]
     AddHandler cgi-script .bat .exe .pl .cgi
     Options +ExecCGI +FollowSymLinks
+
+    # www olmadan yönlendir
+    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+    RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
 
     # API yönlendirmesi
     RewriteCond %{REQUEST_FILENAME} !-d
@@ -76,6 +26,9 @@ ErrorDocument 500 /error.php?code=500
     # index.php'yi gizle
     RewriteCond %{THE_REQUEST} ^[A-Z]{3,}\s/+index\.php [NC]
     RewriteRule ^ / [R=301,L]
+
+    # includes klasörüne doğrudan erişimi engelle
+    RewriteRule ^includes/ - [F,L]
 </IfModule>
 
 # Önbellek ayarları
@@ -116,13 +69,29 @@ ErrorDocument 500 /error.php?code=500
     AddOutputFilterByType DEFLATE application/json
 </IfModule>
 
-# PHP ayarları
-php_value upload_max_filesize 10M
-php_value post_max_size 10M
-php_value max_execution_time 300
-php_value max_input_time 300
-php_value memory_limit 256M
-php_value session.cookie_httponly 1
-php_value session.use_only_cookies 1
-php_value session.cookie_secure 1
-php_value session.cookie_samesite "Strict" 
+# Türkçe karakter desteği
+AddDefaultCharset UTF-8
+
+# Güvenli dosya erişimi
+<FilesMatch "^\.">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "\.(sql|log|md|json|lock|git|env|config|ini|yml|yaml)$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# PHP dosyalarına doğrudan erişimi engelle
+<FilesMatch "^(database|config|connection)\.php$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Hata sayfaları
+ErrorDocument 400 /error.php?code=400
+ErrorDocument 401 /error.php?code=401
+ErrorDocument 403 /error.php?code=403
+ErrorDocument 404 /error.php?code=404
+ErrorDocument 500 /error.php?code=500
