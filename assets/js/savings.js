@@ -9,7 +9,7 @@ async function loadSavings() {
         const grid = document.getElementById('savingsGrid');
         grid.innerHTML = '<div class="loading">Yükleniyor...</div>';
 
-        const response = await fetchAPI('/api/savings.php');
+        const response = await fetchAPI('/api/savings');
 
         if (response.success) {
             if (response.data.length === 0) {
@@ -110,7 +110,7 @@ async function handleAddSaving(event) {
         const data = formDataToJSON(form);
         data.csrf_token = CSRF_TOKEN;
 
-        const response = await fetchAPI('/api/savings.php', {
+        const response = await fetchAPI('/api/savings', {
             method: 'POST',
             body: JSON.stringify(data)
         });
@@ -141,7 +141,7 @@ async function handleAddSaving(event) {
 // Birikim hedefi düzenleme
 async function editSaving(id) {
     try {
-        const response = await fetchAPI(`/api/savings.php?id=${id}`);
+        const response = await fetchAPI(`/api/savings?id=${id}`);
 
         if (response.success) {
             const saving = response.data;
@@ -179,7 +179,7 @@ async function handleEditSaving(event) {
         const data = formDataToJSON(form);
         data.csrf_token = CSRF_TOKEN;
 
-        const response = await fetchAPI('/api/savings.php', {
+        const response = await fetchAPI('/api/savings', {
             method: 'PUT',
             body: JSON.stringify(data)
         });
@@ -222,7 +222,7 @@ async function deleteSaving(id) {
         });
 
         if (result.isConfirmed) {
-            const response = await fetchAPI('/api/savings.php', {
+            const response = await fetchAPI('/api/savings', {
                 method: 'DELETE',
                 body: JSON.stringify({
                     id: id,
@@ -256,7 +256,7 @@ async function deleteSaving(id) {
 // Hızlı güncelleme modalını göster
 async function showQuickUpdate(id) {
     try {
-        const response = await fetchAPI(`/api/savings.php?id=${id}`);
+        const response = await fetchAPI(`/api/savings?id=${id}`);
 
         if (response.success) {
             const saving = response.data;
@@ -288,7 +288,7 @@ async function handleQuickUpdate(event) {
         const data = formDataToJSON(form);
         data.csrf_token = CSRF_TOKEN;
 
-        const response = await fetchAPI('/api/savings.php', {
+        const response = await fetchAPI('/api/savings', {
             method: 'PUT',
             body: JSON.stringify({
                 id: data.id,

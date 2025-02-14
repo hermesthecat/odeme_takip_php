@@ -20,7 +20,7 @@ async function loadIncomes() {
         if (category !== 'all') params.append('category', category);
         if (currency !== 'all') params.append('currency', currency);
 
-        const response = await fetchAPI(`/api/income.php?${params.toString()}`);
+        const response = await fetchAPI(`/api/income?${params.toString()}`);
 
         if (response.success) {
             if (response.data.length === 0) {
@@ -63,7 +63,7 @@ async function handleAddIncome(event) {
         const data = formDataToJSON(form);
         data.csrf_token = CSRF_TOKEN;
 
-        const response = await fetchAPI('/api/income.php', {
+        const response = await fetchAPI('/api/income', {
             method: 'POST',
             body: JSON.stringify(data)
         });
@@ -94,7 +94,7 @@ async function handleAddIncome(event) {
 // Gelir düzenleme
 async function editIncome(id) {
     try {
-        const response = await fetchAPI(`/api/income.php?id=${id}`);
+        const response = await fetchAPI(`/api/income?id=${id}`);
 
         if (response.success) {
             const income = response.data;
@@ -132,7 +132,7 @@ async function handleEditIncome(event) {
         const data = formDataToJSON(form);
         data.csrf_token = CSRF_TOKEN;
 
-        const response = await fetchAPI('/api/income.php', {
+        const response = await fetchAPI('/api/income', {
             method: 'PUT',
             body: JSON.stringify(data)
         });
@@ -175,7 +175,7 @@ async function deleteIncome(id) {
         });
 
         if (result.isConfirmed) {
-            const response = await fetchAPI('/api/income.php', {
+            const response = await fetchAPI('/api/income', {
                 method: 'DELETE',
                 body: JSON.stringify({
                     id: id,

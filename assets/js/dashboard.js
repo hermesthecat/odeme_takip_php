@@ -7,14 +7,14 @@
 async function updateSummaryCards() {
     try {
         // Gelir toplamı
-        const incomeResponse = await fetchAPI('/api/income.php');
+        const incomeResponse = await fetchAPI('/api/income');
         if (incomeResponse.success) {
             const totalIncome = incomeResponse.data.reduce((sum, item) => sum + parseFloat(item.amount), 0);
             document.querySelector('#incomeCard .amount').textContent = formatMoney(totalIncome);
         }
 
         // Gider toplamı
-        const expenseResponse = await fetchAPI('/api/expense.php');
+        const expenseResponse = await fetchAPI('/api/expense');
         if (expenseResponse.success) {
             const totalExpense = expenseResponse.data.reduce((sum, item) => sum + parseFloat(item.amount), 0);
             document.querySelector('#expenseCard .amount').textContent = formatMoney(totalExpense);
@@ -26,7 +26,7 @@ async function updateSummaryCards() {
         document.querySelector('#balanceCard .amount').classList.toggle('negative', netBalance < 0);
 
         // Birikim toplamı
-        const savingsResponse = await fetchAPI('/api/savings.php');
+        const savingsResponse = await fetchAPI('/api/savings');
         if (savingsResponse.success) {
             const totalSavings = savingsResponse.data.reduce((sum, item) => sum + parseFloat(item.current_amount), 0);
             document.querySelector('#savingsCard .amount').textContent = formatMoney(totalSavings);
@@ -49,12 +49,12 @@ async function updateIncomeExpenseChart() {
         }).reverse();
 
         const incomeData = await Promise.all(months.map(async month => {
-            const response = await fetchAPI(`/api/income.php?month=${month}`);
+            const response = await fetchAPI(`/api/income?month=${month}`);
             return response.success ? response.data.reduce((sum, item) => sum + parseFloat(item.amount), 0) : 0;
         }));
 
         const expenseData = await Promise.all(months.map(async month => {
-            const response = await fetchAPI(`/api/expense.php?month=${month}`);
+            const response = await fetchAPI(`/api/expense?month=${month}`);
             return response.success ? response.data.reduce((sum, item) => sum + parseFloat(item.amount), 0) : 0;
         }));
 
@@ -108,7 +108,7 @@ async function updateCategoryChart() {
         const ctx = document.getElementById('categoryChart').getContext('2d');
 
         // Gider kategorilerini al
-        const expenseResponse = await fetchAPI('/api/expense.php');
+        const expenseResponse = await fetchAPI('/api/expense');
         const categoryData = {};
 
         if (expenseResponse.success) {
@@ -155,8 +155,8 @@ async function updateRecentTransactions() {
 
         // Son 5 gelir ve gideri al
         const [incomeResponse, expenseResponse] = await Promise.all([
-            fetchAPI('/api/income.php?limit=5'),
-            fetchAPI('/api/expense.php?limit=5')
+            fetchAPI('/api/income?limit=5'),
+            fetchAPI('/api/expense?limit=5')
         ]);
 
         const transactions = [];
@@ -206,8 +206,8 @@ async function updateUpcomingPayments() {
 
         // Yaklaşan faturaları ve giderleri al
         const [billsResponse, expenseResponse] = await Promise.all([
-            fetchAPI('/api/bills.php?status=pending'),
-            fetchAPI('/api/expense.php?status=pending')
+            fetchAPI('/api/bills?status=pending'),
+            fetchAPI('/api/expense?status=pending')
         ]);
 
         const payments = [];
@@ -255,7 +255,7 @@ async function updateCurrencyRates() {
         const container = document.querySelector('#currencyWidget .currency-rates');
         container.innerHTML = '<div class="loading">Yükleniyor...</div>';
 
-        const response = await fetchAPI('/api/currency.php');
+        const response = await fetchAPI('/api/currency');
 
         if (response.success) {
             const { rates, currencies, last_update } = response.data;

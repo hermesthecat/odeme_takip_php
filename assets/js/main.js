@@ -37,7 +37,7 @@ document.getElementById('themeToggle')?.addEventListener('click', async function
     document.cookie = `theme=${newTheme};path=/;max-age=31536000`; // 1 yıl
 
     try {
-        await fetchAPI('/api/user-preferences.php', {
+        await fetchAPI('/api/user-preferences', {
             method: 'POST',
             body: JSON.stringify({ theme: newTheme })
         });

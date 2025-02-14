@@ -9,7 +9,7 @@ async function loadUpcomingBills() {
         const container = document.getElementById('upcomingBills');
         container.innerHTML = '<div class="loading">Yükleniyor...</div>';
 
-        const response = await fetchAPI('/api/bills.php?status=pending');
+        const response = await fetchAPI('/api/bills?status=pending');
 
         if (response.success) {
             if (response.data.length === 0) {
@@ -68,7 +68,7 @@ async function loadBills() {
         if (status !== 'all') params.append('status', status);
         if (currency !== 'all') params.append('currency', currency);
 
-        const response = await fetchAPI(`/api/bills.php?${params.toString()}`);
+        const response = await fetchAPI(`/api/bills?${params.toString()}`);
 
         if (response.success) {
             if (response.data.length === 0) {
@@ -176,7 +176,7 @@ async function handleAddBill(event) {
         const data = formDataToJSON(form);
         data.csrf_token = CSRF_TOKEN;
 
-        const response = await fetchAPI('/api/bills.php', {
+        const response = await fetchAPI('/api/bills', {
             method: 'POST',
             body: JSON.stringify(data)
         });
@@ -208,7 +208,7 @@ async function handleAddBill(event) {
 // Fatura düzenleme
 async function editBill(id) {
     try {
-        const response = await fetchAPI(`/api/bills.php?id=${id}`);
+        const response = await fetchAPI(`/api/bills?id=${id}`);
 
         if (response.success) {
             const bill = response.data;
@@ -246,7 +246,7 @@ async function handleEditBill(event) {
         const data = formDataToJSON(form);
         data.csrf_token = CSRF_TOKEN;
 
-        const response = await fetchAPI('/api/bills.php', {
+        const response = await fetchAPI('/api/bills', {
             method: 'PUT',
             body: JSON.stringify(data)
         });
@@ -290,7 +290,7 @@ async function deleteBill(id) {
         });
 
         if (result.isConfirmed) {
-            const response = await fetchAPI('/api/bills.php', {
+            const response = await fetchAPI('/api/bills', {
                 method: 'DELETE',
                 body: JSON.stringify({
                     id: id,
@@ -326,7 +326,7 @@ async function deleteBill(id) {
 async function markBillAsPaid(id) {
     try {
         // Yeni fatura tarihi hesapla
-        const response = await fetchAPI(`/api/bills.php?id=${id}`);
+        const response = await fetchAPI(`/api/bills?id=${id}`);
         if (!response.success) {
             throw new Error(response.error || 'Fatura bilgileri alınamadı');
         }
@@ -335,7 +335,7 @@ async function markBillAsPaid(id) {
         const nextDueDate = calculateNextDueDate(bill.due_date, bill.repeat_interval);
 
         // Faturayı güncelle
-        const updateResponse = await fetchAPI('/api/bills.php', {
+        const updateResponse = await fetchAPI('/api/bills', {
             method: 'PUT',
             body: JSON.stringify({
                 id: id,

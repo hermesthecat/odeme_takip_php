@@ -6,7 +6,7 @@
 // Oturum kontrolü
 async function checkSession() {
     try {
-        const response = await fetchAPI('/api/auth.php');
+        const response = await fetchAPI('/api/auth');
         if (!response.success) {
             window.location.href = '/login.php';
         }
@@ -23,7 +23,7 @@ async function handleLogin(event) {
         const form = event.target;
         const data = formDataToJSON(form);
 
-        const response = await fetchAPI('/api/auth.php', {
+        const response = await fetchAPI('/api/auth', {
             method: 'POST',
             body: JSON.stringify(data)
         });
@@ -68,7 +68,7 @@ async function handleRegister(event) {
             return;
         }
 
-        const response = await fetchAPI('/api/auth.php', {
+        const response = await fetchAPI('/api/auth', {
             method: 'PUT',
             body: JSON.stringify(data)
         });
@@ -104,7 +104,7 @@ async function handleRegister(event) {
 // Çıkış işlemi
 async function handleLogout() {
     try {
-        const response = await fetchAPI('/api/auth.php', {
+        const response = await fetchAPI('/api/auth', {
             method: 'DELETE'
         });
 
@@ -124,7 +124,7 @@ async function handlePasswordReset(event) {
         const form = event.target;
         const data = formDataToJSON(form);
 
-        const response = await fetchAPI('/api/auth.php', {
+        const response = await fetchAPI('/api/auth', {
             method: 'PATCH',
             body: JSON.stringify(data)
         });
@@ -174,7 +174,7 @@ async function handlePasswordChange(event) {
             return;
         }
 
-        const response = await fetchAPI('/api/auth.php', {
+        const response = await fetchAPI('/api/auth', {
             method: 'PATCH',
             body: JSON.stringify({
                 ...data,
@@ -211,7 +211,7 @@ async function handlePasswordChange(event) {
 // Kullanıcı tercihlerini güncelleme
 async function updateUserPreferences(preferences) {
     try {
-        const response = await fetchAPI('/api/auth.php', {
+        const response = await fetchAPI('/api/auth', {
             method: 'PATCH',
             body: JSON.stringify({
                 action: 'update_preferences',

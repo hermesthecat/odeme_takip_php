@@ -22,7 +22,7 @@ async function loadExpenses() {
         if (status !== 'all') params.append('status', status);
         if (currency !== 'all') params.append('currency', currency);
 
-        const response = await fetchAPI(`/api/expense.php?${params.toString()}`);
+        const response = await fetchAPI(`/api/expense?${params.toString()}`);
 
         if (response.success) {
             if (response.data.length === 0) {
@@ -91,7 +91,7 @@ async function handleAddExpense(event) {
             data.payment_date = new Date().toISOString().split('T')[0];
         }
 
-        const response = await fetchAPI('/api/expense.php', {
+        const response = await fetchAPI('/api/expense', {
             method: 'POST',
             body: JSON.stringify(data)
         });
@@ -122,7 +122,7 @@ async function handleAddExpense(event) {
 // Gider düzenleme
 async function editExpense(id) {
     try {
-        const response = await fetchAPI(`/api/expense.php?id=${id}`);
+        const response = await fetchAPI(`/api/expense?id=${id}`);
 
         if (response.success) {
             const expense = response.data;
@@ -167,7 +167,7 @@ async function handleEditExpense(event) {
             data.payment_date = new Date().toISOString().split('T')[0];
         }
 
-        const response = await fetchAPI('/api/expense.php', {
+        const response = await fetchAPI('/api/expense', {
             method: 'PUT',
             body: JSON.stringify(data)
         });
@@ -210,7 +210,7 @@ async function deleteExpense(id) {
         });
 
         if (result.isConfirmed) {
-            const response = await fetchAPI('/api/expense.php', {
+            const response = await fetchAPI('/api/expense', {
                 method: 'DELETE',
                 body: JSON.stringify({
                     id: id,
@@ -244,7 +244,7 @@ async function deleteExpense(id) {
 // Ödendi olarak işaretle
 async function markAsPaid(id) {
     try {
-        const response = await fetchAPI('/api/expense.php', {
+        const response = await fetchAPI('/api/expense', {
             method: 'PUT',
             body: JSON.stringify({
                 id: id,

@@ -35,7 +35,7 @@ async function loadReport() {
             csrf_token: CSRF_TOKEN
         });
 
-        const response = await fetchAPI(`/api/reports.php?${params.toString()}`);
+        const response = await fetchAPI(`/api/reports?${params.toString()}`);
 
         if (response.success) {
             // Rapor özetini güncelle
@@ -284,7 +284,7 @@ async function exportReport(format) {
             params.append('end_date', document.getElementById('endDate').value);
         }
 
-        const response = await fetchAPI(`/api/reports.php/export?${params.toString()}`);
+        const response = await fetchAPI(`/api/reports?export?${params.toString()}`);
 
         if (response.success) {
             // Dosyayı indir
@@ -312,7 +312,7 @@ async function handleCustomReport(event) {
         const data = formDataToJSON(form);
         data.csrf_token = CSRF_TOKEN;
 
-        const response = await fetchAPI('/api/reports.php/custom', {
+        const response = await fetchAPI('/api/reports?custom', {
             method: 'POST',
             body: JSON.stringify(data)
         });
