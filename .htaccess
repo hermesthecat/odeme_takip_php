@@ -61,7 +61,13 @@ ErrorDocument 500 /error.php?code=500
     RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
     RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
 
-    # PHP uzantısını gizle
+    # API yönlendirmesi
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} ^/api/(.*)$
+    RewriteRule ^api/([^/]+)/?$ api/$1.php [NC,L]
+
+    # Genel PHP uzantısını gizle
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME}.php -f
     RewriteRule ^([^\.]+)$ $1.php [NC,L]
