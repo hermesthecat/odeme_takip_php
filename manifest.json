@@ -1,0 +1,107 @@
+{
+    "name": "Ödeme Takip Sistemi",
+    "short_name": "Ödeme Takip",
+    "description": "Kişisel finans yönetimi için basit ve kullanışlı bir araç",
+    "start_url": "/",
+    "display": "standalone",
+    "background_color": "#ffffff",
+    "theme_color": "#4CAF50",
+    "orientation": "any",
+    "icons": [
+        {
+            "src": "/assets/img/icon-72x72.png",
+            "sizes": "72x72",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/img/icon-96x96.png",
+            "sizes": "96x96",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/img/icon-128x128.png",
+            "sizes": "128x128",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/img/icon-144x144.png",
+            "sizes": "144x144",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/img/icon-152x152.png",
+            "sizes": "152x152",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/img/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/img/icon-384x384.png",
+            "sizes": "384x384",
+            "type": "image/png",
+            "purpose": "any maskable"
+        },
+        {
+            "src": "/assets/img/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Gelir Ekle",
+            "short_name": "Gelir",
+            "description": "Yeni gelir kaydı ekle",
+            "url": "/pages/income.php?action=add",
+            "icons": [{ "src": "/assets/img/income-96x96.png", "sizes": "96x96" }]
+        },
+        {
+            "name": "Gider Ekle",
+            "short_name": "Gider",
+            "description": "Yeni gider kaydı ekle",
+            "url": "/pages/expenses.php?action=add",
+            "icons": [{ "src": "/assets/img/expense-96x96.png", "sizes": "96x96" }]
+        }
+    ],
+    "screenshots": [
+        {
+            "src": "/assets/img/screenshot-1.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "platform": "wide",
+            "label": "Ana Sayfa"
+        },
+        {
+            "src": "/assets/img/screenshot-2.png",
+            "sizes": "1280x720",
+            "type": "image/png",
+            "platform": "wide",
+            "label": "Gelir/Gider Yönetimi"
+        }
+    ],
+    "categories": ["finance", "productivity", "utilities"],
+    "lang": "tr-TR",
+    "dir": "ltr",
+    "prefer_related_applications": false,
+    "related_applications": [],
+    "iarc_rating_id": "",
+    "share_target": {
+        "action": "/pages/expenses.php",
+        "method": "GET",
+        "params": {
+            "title": "title",
+            "text": "description",
+            "url": "link"
+        }
+    }
+} 
