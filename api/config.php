@@ -198,8 +198,8 @@ function sanitizeOutput($data)
 function checkRateLimit()
 {
     $ip = $_SERVER['REMOTE_ADDR'];
-    $cache_file = sys_get_temp_dir() . "/rate_limit_$ip.txt";
-    
+    $cache_file = __DIR__ . "/cache/rate_limit_$ip.txt";
+
     if (file_exists($cache_file)) {
         $data = json_decode(file_get_contents($cache_file), true);
         if ($data['count'] >= API_RATE_LIMIT) {
@@ -222,8 +222,8 @@ function checkRateLimit()
 // API önbellek kontrolü
 function checkCache($key)
 {
-    $cache_file = sys_get_temp_dir() . "/cache_$key.txt";
-    
+    $cache_file = __DIR__ . "/cache/$key.txt";
+
     if (file_exists($cache_file)) {
         $data = json_decode(file_get_contents($cache_file), true);
         if (time() - $data['timestamp'] < API_CACHE_TIME) {
@@ -235,7 +235,7 @@ function checkCache($key)
 
 function setCache($key, $value)
 {
-    $cache_file = sys_get_temp_dir() . "/cache_$key.txt";
+    $cache_file = __DIR__ . "/cache/$key.txt";
     $data = [
         'value' => $value,
         'timestamp' => time()
