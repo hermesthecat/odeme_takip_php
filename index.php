@@ -95,7 +95,7 @@ $csrf_token = generateToken();
         <div class="recent-transactions">
             <div class="section-header">
                 <h3>Son İşlemler</h3>
-                <a href="/pages/reports.php" class="btn-link">
+                <a href="reports.php" class="btn-link">
                     Tümünü Gör <i class="fas fa-chevron-right"></i>
                 </a>
             </div>
@@ -107,7 +107,7 @@ $csrf_token = generateToken();
         <div class="upcoming-payments">
             <div class="section-header">
                 <h3>Yaklaşan Ödemeler</h3>
-                <a href="/pages/bills.php" class="btn-link">
+                <a href="bills.php" class="btn-link">
                     Tümünü Gör <i class="fas fa-chevron-right"></i>
                 </a>
             </div>
@@ -130,16 +130,16 @@ $csrf_token = generateToken();
 
     <!-- Hızlı İşlem Butonları -->
     <div class="quick-actions">
-        <button onclick="window.location.href='/pages/income.php?action=add'" class="btn-floating" title="Gelir Ekle">
+        <button onclick="window.location.href='income.php?action=add'" class="btn-floating" title="Gelir Ekle">
             <i class="fas fa-plus"></i>
         </button>
-        <button onclick="window.location.href='/pages/expenses.php?action=add'" class="btn-floating" title="Gider Ekle">
+        <button onclick="window.location.href='expenses.php?action=add'" class="btn-floating" title="Gider Ekle">
             <i class="fas fa-minus"></i>
         </button>
-        <button onclick="window.location.href='/pages/bills.php?action=add'" class="btn-floating" title="Fatura Ekle">
+        <button onclick="window.location.href='bills.php?action=add'" class="btn-floating" title="Fatura Ekle">
             <i class="fas fa-file-invoice"></i>
         </button>
-        <button onclick="window.location.href='/pages/savings.php?action=add'" class="btn-floating" title="Birikim Hedefi Ekle">
+        <button onclick="window.location.href='savings.php?action=add'" class="btn-floating" title="Birikim Hedefi Ekle">
             <i class="fas fa-piggy-bank"></i>
         </button>
     </div>
