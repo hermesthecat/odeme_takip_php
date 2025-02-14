@@ -62,14 +62,14 @@
       "name": "Gelir Ekle",
       "short_name": "Gelir",
       "description": "Yeni gelir kaydı ekle",
-      "url": "/pages/income.php?action=add",
+      "url": "income.php?action=add",
       "icons": [{ "src": "/assets/img/income-96x96.png", "sizes": "96x96" }]
     },
     {
       "name": "Gider Ekle",
       "short_name": "Gider",
       "description": "Yeni gider kaydı ekle",
-      "url": "/pages/expenses.php?action=add",
+      "url": "expenses.php?action=add",
       "icons": [{ "src": "/assets/img/expense-96x96.png", "sizes": "96x96" }]
     }
   ],
@@ -96,7 +96,7 @@
   "related_applications": [],
   "iarc_rating_id": "",
   "share_target": {
-    "action": "/pages/expenses.php",
+    "action": "expenses.php",
     "method": "GET",
     "params": {
       "title": "title",

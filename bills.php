@@ -4,7 +4,7 @@
  * @author A. Kerem Gök
  */
 
-require_once '../includes/header.php';
+require_once 'includes/header.php';
 checkAuth();
 
 // CSRF token oluştur
@@ -211,4 +211,4 @@ $csrf_token = generateToken();
     const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
 </script>
 
-<?php require_once '../includes/footer.php'; ?>
+<?php require_once 'includes/footer.php'; ?>
