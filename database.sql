@@ -200,6 +200,43 @@ CREATE TABLE password_resets (
     UNIQUE KEY unique_token (token),
     INDEX idx_expires (expires_at)
 ) ENGINE = InnoDB;
+-- Fatura kategorileri tablosu
+CREATE TABLE bill_categories (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    icon VARCHAR(50),
+    color VARCHAR(7),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_bill_category (user_id, name)
+) ENGINE = InnoDB;
+-- Fatura ödemeleri tablosu
+CREATE TABLE bill_payments (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    bill_id INT NOT NULL,
+    amount DECIMAL(15, 2) NOT NULL,
+    payment_date DATE NOT NULL,
+    payment_method VARCHAR(50),
+    reference_no VARCHAR(100),
+    notes TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (bill_id) REFERENCES bill_reminders(id) ON DELETE CASCADE,
+    INDEX idx_bill_payments (bill_id, payment_date)
+) ENGINE = InnoDB;
+-- Fatura bildirim ayarları tablosu
+CREATE TABLE bill_notifications (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    notification_type ENUM('email', 'sms', 'push') NOT NULL,
+    days_before INT NOT NULL DEFAULT 3,
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_notification (user_id, notification_type)
+) ENGINE = InnoDB;
 -- İndeksler
 CREATE INDEX idx_incomes_user_date ON incomes(user_id, income_date);
 CREATE INDEX idx_expenses_user_date ON expenses(user_id, due_date);
