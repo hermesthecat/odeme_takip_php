@@ -4,364 +4,344 @@
 
 ### System Architecture
 
+```mermaid
+graph TD
+    Client[Client Layer: Frontend JS]
+    API[Application Layer: PHP APIs]
+    DB[Data Layer: MySQL]
+    
+    Client --> |CRUD Operations| API
+    API --> |Data Persistence| DB
+    DB --> |Query Results| API
+    API --> |JSON Response| Client
 ```
-[Client Layer]
-    │
-    ├── Web Interface (HTML/CSS/JS)
-    │   ├── Dashboard Components
-    │   ├── Forms & Inputs
-    │   └── Interactive Charts
-    │
-[Application Layer]
-    │
-    ├── PHP Backend
-    │   ├── Authentication System
-    │   ├── Business Logic
-    │   └── API Endpoints
-    │
-[Data Layer]
-    │
-    ├── MySQL Database
-    │   ├── Core Tables
-    │   ├── Transaction History
-    │   └── User Data
-    │
-[Integration Layer]
-    │
-    └── External Services
-        ├── Exchange Rate API
-        └── Email Service
+
+### Component Integration
+
+```mermaid
+graph TD
+    F[Frontend JS Modules]
+    A[API Endpoints]
+    D[Database Tables]
+    V[Database Views]
+    
+    F --> |API Calls| A
+    A --> |SQL Queries| D
+    A --> |Statistical Queries| V
+    V --> |Aggregated Data| A
+    D --> |Raw Data| A
+    A --> |JSON Response| F
 ```
 
 ## Design Patterns
 
-### 1. Authentication & Security
+### 1. Data Flow Pattern
 
-- Enhanced Session Management
+```javascript
+// Frontend Request Pattern
+async function handleDataOperation() {
+    try {
+        // 1. Form Data Collection
+        const data = formDataToJSON(form);
+        data.csrf_token = CSRF_TOKEN;
 
-  - Secure cookie settings (httpOnly, secure, strict)
-  - Session lifetime control
-  - IP and user agent validation
-  - Session regeneration on login
+        // 2. API Request
+        const response = await fetchAPI('/api/endpoint', {
+            method: 'METHOD',
+            body: JSON.stringify(data)
+        });
 
-- Brute Force Protection
-
-  - Failed login attempt tracking
-  - Account lockout mechanism
-  - Cooldown period implementation
-  - IP-based rate limiting
-
-- Input Security
-
-  - CSRF token implementation
-  - Input sanitization and validation
-  - Password complexity requirements
-  - XSS prevention
-
-- Persistent Authentication
-
-  - Remember me functionality
-  - Secure token generation
-  - Token expiration management
-  - Cookie security settings
-
-- Security Logging
-  - Activity tracking
-  - Security event logging
-  - IP address monitoring
-  - User agent tracking
-
-### 2. Database Design
-
-- Normalized schema design (3NF)
-- Foreign key constraints for referential integrity
-- JSON columns for flexible data storage
-- Indexed queries for performance
-- Activity logging for audit trails
-
-### 3. API Structure
-
-- RESTful endpoints organization
-- Resource-based URL routing
-- Standardized response formats
-- Error handling and status codes
-- Rate limiting and caching
-
-### 4. Frontend Organization
-
-- Component-based structure
-- Event-driven interactions
-- Asynchronous data loading
-- Responsive design patterns
-- Theme switching capability
-
-### 1. Data Management
-
-- Dynamic Configuration
-
-  - Database-driven settings
-  - User-specific customization
-  - Default value fallbacks
-  - Validation constants
-
-- Category Management
-
-  - User-specific categories
-  - Dynamic color schemes
-  - Hierarchical structure
-  - Flexible naming
-
-- Interval Handling
-  - Predefined validations
-  - Custom intervals
-  - Default preferences
-  - Time zone awareness
-
-### 2. Configuration Management
-
-```php
-// System Constants
-define('VALID_INTERVALS', [...]);
-define('DEFAULT_VALUES', [...]);
-define('SYSTEM_COLORS', [...]);
-
-// Database Storage
-table: user_preferences
-table: category_settings
-table: system_defaults
-```
-
-### 3. Validation Patterns
-
-```php
-// Input Validation
-validateInterval($interval)
-validateCategory($category)
-validateDefaults($settings)
-
-// Data Consistency
-checkUserPermissions()
-verifyDataIntegrity()
-ensureUniqueness()
-```
-
-## Key Technical Decisions
-
-### Database Schema
-
-- Users and authentication
-- Financial transactions (income/expenses)
-- Categories and tags
-- Bills and reminders
-- Savings goals
-- Activity logging
-- Exchange rates
-
-### Security Implementation
-
-```php
-// Session Security
-initSecureSession()
-validateSession()
-regenerateSession()
-
-// Authentication
-validateLogin()
-checkRateLimit()
-handleFailedAttempts()
-
-// Token Management
-generateSecureToken()
-validateToken()
-handleTokenExpiration()
-
-// Input Protection
-sanitizeInput()
-validateInput()
-checkCsrfToken()
-
-// Security Logging
-logSecurityEvent()
-trackUserActivity()
-monitorFailedAttempts()
-```
-
-### Database Schema Updates
-
-```sql
--- Remember Me Tokens
-CREATE TABLE remember_me_tokens (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    token_hash VARCHAR(255) NOT NULL,
-    expires_at TIMESTAMP NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    INDEX idx_token_expiry (expires_at)
-);
-
--- Security Event Logging
-ALTER TABLE activity_log
-ADD COLUMN ip_address VARCHAR(45),
-ADD COLUMN user_agent TEXT;
-
--- User Security Fields
-ALTER TABLE users
-ADD COLUMN failed_login_attempts INT DEFAULT 0,
-ADD COLUMN last_failed_login TIMESTAMP NULL;
-```
-
-### API Response Format
-
-```json
-{
-  "status": "success|error",
-  "data": {},
-  "message": "Response message",
-  "code": 200
+        // 3. Response Handling
+        if (response.success) {
+            // Success actions
+        } else {
+            throw new Error(response.error);
+        }
+    } catch (error) {
+        // Error handling
+    }
 }
 ```
 
-## Component Relationships
+```php
+// API Response Pattern
+try {
+    // 1. Input Validation
+    validateInput($data);
+
+    // 2. Database Operation
+    $pdo->beginTransaction();
+    // ... database operations
+    $pdo->commit();
+
+    // 3. Response
+    echo json_encode([
+        'success' => true,
+        'data' => $result
+    ]);
+} catch (Exception $e) {
+    $pdo->rollBack();
+    http_response_code(400);
+    echo json_encode(['error' => $e->getMessage()]);
+}
+```
+
+### 2. Database Integration Pattern
+
+```sql
+-- Table Structure Pattern
+CREATE TABLE entity (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    -- Entity specific fields
+    status ENUM(...) DEFAULT '...',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+-- View Pattern
+CREATE VIEW entity_summary AS
+SELECT 
+    entity.*,
+    related_data
+FROM entity
+JOIN related_tables
+WHERE conditions;
+```
+
+### 3. Frontend Module Pattern
+
+```javascript
+// Module Organization
+class ModuleManager {
+    // 1. Data Loading
+    async loadData() {
+        // Fetch and display data
+    }
+
+    // 2. Form Handling
+    async handleForm(event) {
+        // Process form submission
+    }
+
+    // 3. UI Updates
+    updateUI(data) {
+        // Update interface
+    }
+
+    // 4. Error Handling
+    handleError(error) {
+        // Display error messages
+    }
+}
+```
+
+## Implementation Patterns
+
+### 1. CRUD Operations
+
+```mermaid
+graph LR
+    F[Frontend Form] --> V[Validation]
+    V --> A[API Endpoint]
+    A --> D[Database]
+    D --> R[Response]
+    R --> U[UI Update]
+```
+
+### 2. Data Validation
+
+```javascript
+// Frontend Validation
+const validateForm = (data) => {
+    // Type checking
+    // Format validation
+    // Business rules
+};
+```
+
+```php
+// Backend Validation
+function validateInput($data) {
+    // Required fields
+    // Data types
+    // Business logic
+}
+```
+
+### 3. Error Handling
+
+```javascript
+// Frontend Error Handling
+try {
+    await operation();
+} catch (error) {
+    handleError(error);
+}
+```
+
+```php
+// Backend Error Handling
+try {
+    // Operation
+} catch (Exception $e) {
+    logError($e);
+    return errorResponse($e);
+}
+```
+
+## Security Patterns
 
 ### 1. Authentication Flow
 
-```
-Login/Register → Session Management → Access Control
-```
-
-### 2. Transaction Processing
-
-```
-Input Validation → Currency Conversion → Database Storage → Activity Log
-```
-
-### 3. Reporting System
-
-```
-Data Aggregation → Analysis → Visualization → Export
+```mermaid
+graph TD
+    Login[Login Form]
+    Auth[Auth API]
+    Session[Session Management]
+    
+    Login --> |Credentials| Auth
+    Auth --> |Validate| Session
+    Session --> |Token| Login
 ```
 
-### 1. Configuration Flow
+### 2. Data Protection
 
-```
-System Defaults → User Preferences → Runtime Values
-```
-
-### 2. Category Management
-
-```
-Base Categories → User Customization → Applied Settings
+```php
+// Security Measures
+- CSRF Protection
+- Input Sanitization
+- Prepared Statements
+- Transaction Safety
 ```
 
-### 3. Data Validation
+## Database Patterns
 
+### 1. Table Relationships
+
+```mermaid
+graph TD
+    Users --> Incomes
+    Users --> Expenses
+    Users --> Bills
+    Users --> Savings
+    
+    Bills --> Payments
+    Categories --> Transactions
 ```
-System Rules → User Input → Validated Data → Storage
-```
 
-## Architectural Patterns
+### 2. Data Access
 
-### 1. MVC Pattern
-
-- Models: Database interactions
-- Views: PHP templates and JS rendering
-- Controllers: Business logic and routing
-
-### 2. Repository Pattern
-
-- Separation of data access logic
-- Consistent interface for data operations
-- Centralized data manipulation
-
-### 3. Service Layer
-
-- Business logic encapsulation
-- Transaction management
-- External service integration
-
-## Error Handling
-
-### 1. Exception Hierarchy
-
-- Database errors
-- Validation errors
-- Authentication errors
-- Integration errors
-
-### 2. Error Response Format
-
-```json
-{
-  "status": "error",
-  "code": "ERROR_CODE",
-  "message": "User friendly message",
-  "details": "Technical details"
+```php
+// Data Access Pattern
+class DataAccess {
+    // CRUD Operations
+    // Transaction Management
+    // Error Handling
+    // Result Processing
 }
 ```
 
-## Performance Optimizations
+## Frontend Patterns
 
-### 1. Caching Strategy
+### 1. Component Structure
 
-- API response caching
-- Exchange rate caching
-- Session data caching
-- Database query caching
+```javascript
+// Component Pattern
+class Component {
+    constructor() {
+        // Initialize
+    }
+    
+    render() {
+        // Display
+    }
+    
+    handleEvents() {
+        // Event Management
+    }
+}
+```
 
-### 2. Query Optimization
+### 2. State Management
 
-- Proper indexing
-- Query planning
-- Batch operations
-- Connection pooling
+```javascript
+// State Management Pattern
+class StateManager {
+    // Data Storage
+    // Event Handling
+    // UI Updates
+}
+```
 
 ## Integration Patterns
 
-### 1. External APIs
+### 1. API Communication
 
-- RESTful integration
-- Webhook handling
-- Rate limit management
-- Error handling
-
-### 2. Internal Services
-
-- Modular design
-- Service discovery
-- Load balancing
-- Circuit breaking
-
-## Development Patterns
-
-### 1. Code Organization
-
-```
-/api          - API endpoints
-/assets       - Static resources
-/includes     - Core functionality
-/cache        - Cached data
+```javascript
+// API Client Pattern
+class APIClient {
+    // Request Formatting
+    // Response Handling
+    // Error Management
+}
 ```
 
-### 2. Naming Conventions
+### 2. Data Synchronization
 
-- camelCase for JavaScript
-- snake_case for PHP/MySQL
-- PascalCase for classes
-- kebab-case for assets
+```javascript
+// Sync Pattern
+class DataSync {
+    // Change Detection
+    // Update Propagation
+    // Conflict Resolution
+}
+```
+
+## Testing Patterns
+
+### 1. Test Organization
+
+```javascript
+// Test Structure
+describe('Module', () => {
+    // Unit Tests
+    // Integration Tests
+    // UI Tests
+});
+```
+
+### 2. Test Data
+
+```php
+// Test Data Pattern
+class TestData {
+    // Data Generation
+    // State Setup
+    // Cleanup
+}
+```
 
 ## Maintenance Patterns
 
 ### 1. Logging
 
-- Error logging
-- Activity logging
-- Performance monitoring
-- Security auditing
+```php
+// Logging Pattern
+function logActivity($type, $data) {
+    // Event Recording
+    // Error Tracking
+    // Audit Trail
+}
+```
 
-### 2. Backup Strategy
+### 2. Monitoring
 
-- Database backups
-- Configuration backups
-- User data protection
-- Recovery procedures
+```php
+// Monitoring Pattern
+class SystemMonitor {
+    // Performance Tracking
+    // Error Detection
+    // Health Checks
+}
