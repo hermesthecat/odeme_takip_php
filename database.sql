@@ -110,7 +110,8 @@ CREATE TABLE bill_reminders (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (category) REFERENCES bill_categories(id) ON DELETE SET NULL
+    FOREIGN KEY (category) REFERENCES bill_categories(id) ON DELETE
+    SET NULL
 ) ENGINE = InnoDB;
 -- Kategoriler tablosu
 CREATE TABLE categories (

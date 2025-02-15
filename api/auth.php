@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @author A. Kerem Gök
  * Kimlik doğrulama API endpoint'i
@@ -315,4 +316,4 @@ try {
     $response['message'] = $e->getMessage();
 }
 
-echo json_encode($response); 
+echo json_encode($response);

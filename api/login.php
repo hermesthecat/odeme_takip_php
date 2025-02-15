@@ -69,8 +69,7 @@ try {
             'email' => $user['email']
         ]
     ]);
-
 } catch (Exception $e) {
     http_response_code(400);
     echo json_encode(['error' => $e->getMessage()]);
-} 
+}

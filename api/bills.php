@@ -176,7 +176,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
             try {
                 $category_id = null;
-                
+
                 // Kategori işleme
                 if (!empty($data['category'])) {
                     try {
@@ -189,22 +189,22 @@ switch ($_SERVER['REQUEST_METHOD']) {
                             icon = VALUES(icon),
                             color = COALESCE(VALUES(color), color)
                         ");
-                        
+
                         $defaultColors = json_decode(DEFAULT_CATEGORY_COLORS, true);
-                        $color = $data['category_color'] ?? 
-                                $defaultColors[$data['category']] ?? 
-                                '#' . substr(md5($data['category']), 0, 6);
-                        
+                        $color = $data['category_color'] ??
+                            $defaultColors[$data['category']] ??
+                            '#' . substr(md5($data['category']), 0, 6);
+
                         $stmt->execute([
                             $user_id,
                             $data['category'],
                             $data['category_icon'] ?? null,
                             $color
                         ]);
-                        
+
                         $category_id = $pdo->lastInsertId() ?: (
-                            $pdo->query("SELECT id FROM bill_categories WHERE user_id = {$user_id} AND name = " . 
-                            $pdo->quote($data['category']))->fetchColumn()
+                            $pdo->query("SELECT id FROM bill_categories WHERE user_id = {$user_id} AND name = " .
+                                $pdo->quote($data['category']))->fetchColumn()
                         );
                     } catch (PDOException $e) {
                         if ($e->getCode() != '23000') throw $e;
@@ -267,7 +267,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     'message' => 'Fatura başarıyla eklendi',
                     'id' => $bill_id
                 ]);
-
             } catch (Exception $e) {
                 $pdo->rollBack();
                 throw $e;
@@ -387,7 +386,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     'success' => true,
                     'message' => 'Fatura başarıyla güncellendi'
                 ]);
-
             } catch (Exception $e) {
                 $pdo->rollBack();
                 throw $e;
@@ -433,7 +431,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     'success' => true,
                     'message' => 'Fatura başarıyla silindi'
                 ]);
-
             } catch (Exception $e) {
                 $pdo->rollBack();
                 throw $e;
@@ -516,7 +513,6 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     'success' => true,
                     'message' => 'Fatura ödemesi başarıyla kaydedildi'
                 ]);
-
             } catch (Exception $e) {
                 $pdo->rollBack();
                 throw $e;

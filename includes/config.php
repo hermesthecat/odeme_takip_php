@@ -105,4 +105,4 @@ define('DEFAULT_CATEGORY_COLORS', json_encode([
     'insurance' => '#4CAF50',
     'subscription' => '#FFC107',
     'other' => '#9E9E9E'
-])); 
+]));

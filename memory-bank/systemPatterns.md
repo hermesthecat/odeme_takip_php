@@ -38,24 +38,28 @@
 ### 1. Authentication & Security
 
 - Enhanced Session Management
+
   - Secure cookie settings (httpOnly, secure, strict)
   - Session lifetime control
   - IP and user agent validation
   - Session regeneration on login
 
 - Brute Force Protection
+
   - Failed login attempt tracking
   - Account lockout mechanism
   - Cooldown period implementation
   - IP-based rate limiting
 
 - Input Security
+
   - CSRF token implementation
   - Input sanitization and validation
   - Password complexity requirements
   - XSS prevention
 
 - Persistent Authentication
+
   - Remember me functionality
   - Secure token generation
   - Token expiration management
@@ -94,12 +98,14 @@
 ### 1. Data Management
 
 - Dynamic Configuration
+
   - Database-driven settings
   - User-specific customization
   - Default value fallbacks
   - Validation constants
 
 - Category Management
+
   - User-specific categories
   - Dynamic color schemes
   - Hierarchical structure

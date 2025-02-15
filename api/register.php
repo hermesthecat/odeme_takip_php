@@ -61,12 +61,12 @@ try {
             status, created_at
         ) VALUES (?, ?, ?, ?, ?, "active", NOW())
     ');
-    
+
     $stmt->execute([
-        $username, 
-        $hashedPassword, 
-        $email, 
-        $firstName, 
+        $username,
+        $hashedPassword,
+        $email,
+        $firstName,
         $lastName
     ]);
 
@@ -81,9 +81,9 @@ try {
             ) VALUES (?, ?, "income", ?, ?)
         ');
         $stmt->execute([
-            $user_id, 
-            $name, 
-            'icon-' . $key, 
+            $user_id,
+            $name,
+            'icon-' . $key,
             '#' . substr(md5($key), 0, 6)
         ]);
     }
@@ -96,9 +96,9 @@ try {
             ) VALUES (?, ?, "expense", ?, ?)
         ');
         $stmt->execute([
-            $user_id, 
-            $name, 
-            'icon-' . $key, 
+            $user_id,
+            $name,
+            'icon-' . $key,
             '#' . substr(md5($key), 0, 6)
         ]);
     }
@@ -109,8 +109,7 @@ try {
         'success' => true,
         'message' => 'Kayıt başarılı'
     ]);
-
 } catch (Exception $e) {
     http_response_code(400);
     echo json_encode(['error' => $e->getMessage()]);
-} 
+}
