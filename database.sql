@@ -102,14 +102,15 @@ CREATE TABLE bill_reminders (
     due_date DATE NOT NULL,
     repeat_interval VARCHAR(20) NOT NULL DEFAULT 'monthly',
     description TEXT,
-    category VARCHAR(50),
+    category INT,
     currency VARCHAR(3) NOT NULL DEFAULT 'TRY',
     status ENUM('active', 'inactive') DEFAULT 'active',
     notification_days INT DEFAULT 3,
     last_notification_date DATE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (category) REFERENCES bill_categories(id) ON DELETE SET NULL
 ) ENGINE = InnoDB;
 -- Kategoriler tablosu
 CREATE TABLE categories (

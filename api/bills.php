@@ -121,6 +121,26 @@ switch ($_SERVER['REQUEST_METHOD']) {
             http_response_code(500);
             echo json_encode(['error' => 'Veritabanı hatası']);
         }
+
+        // Kategori listeleme endpoint'i
+        if (isset($_GET['categories'])) {
+            try {
+                $stmt = $pdo->prepare("
+                    SELECT * FROM bill_categories
+                    WHERE user_id = ?
+                    ORDER BY name
+                ");
+                $stmt->execute([$user_id]);
+                echo json_encode([
+                    'success' => true,
+                    'data' => $stmt->fetchAll()
+                ]);
+            } catch (PDOException $e) {
+                http_response_code(500);
+                echo json_encode(['error' => 'Veritabanı hatası']);
+            }
+            break;
+        }
         break;
 
     case 'POST':
@@ -154,30 +174,50 @@ switch ($_SERVER['REQUEST_METHOD']) {
             $pdo->beginTransaction();
 
             try {
+                $category_id = null;
+                
                 // Fatura kategorisi kontrolü/oluşturma
                 if (!empty($data['category'])) {
-                    $stmt = $pdo->prepare("
-                        SELECT id FROM bill_categories 
-                        WHERE user_id = ? AND name = ?
-                    ");
-                    $stmt->execute([$user_id, $data['category']]);
-                    $category = $stmt->fetch();
-
-                    if (!$category) {
+                    try {
+                        // Önce kategoriyi eklemeyi dene
                         $stmt = $pdo->prepare("
-                            INSERT INTO bill_categories (
-                                user_id, name, icon, color
-                            ) VALUES (?, ?, ?, ?)
+                            INSERT INTO bill_categories (user_id, name, icon, color)
+                            VALUES (?, ?, ?, ?)
+                            ON DUPLICATE KEY UPDATE
+                            icon = VALUES(icon),
+                            color = VALUES(color)
                         ");
+                        
                         $stmt->execute([
                             $user_id,
                             $data['category'],
                             $data['category_icon'] ?? null,
                             $data['category_color'] ?? '#' . substr(md5($data['category']), 0, 6)
                         ]);
+                        
                         $category_id = $pdo->lastInsertId();
-                    } else {
-                        $category_id = $category['id'];
+                        
+                        // Eğer yeni kayıt oluşmadıysa mevcut kategoriyi bul
+                        if (!$category_id) {
+                            $stmt = $pdo->prepare("
+                                SELECT id FROM bill_categories 
+                                WHERE user_id = ? AND name = ?
+                            ");
+                            $stmt->execute([$user_id, $data['category']]);
+                            $category_id = $stmt->fetchColumn();
+                        }
+                    } catch (PDOException $e) {
+                        // Duplicate key hatası durumunda mevcut kategoriyi kullan
+                        if ($e->getCode() == '23000') {
+                            $stmt = $pdo->prepare("
+                                SELECT id FROM bill_categories 
+                                WHERE user_id = ? AND name = ?
+                            ");
+                            $stmt->execute([$user_id, $data['category']]);
+                            $category_id = $stmt->fetchColumn();
+                        } else {
+                            throw $e;
+                        }
                     }
                 }
 
@@ -197,7 +237,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     $data['due_date'],
                     $data['repeat_interval'] ?? 'monthly',
                     $data['description'] ?? null,
-                    $category_id ?? null,
+                    $category_id,
                     $data['currency'] ?? 'TRY',
                     'active',
                     $data['notification_days'] ?? 3
