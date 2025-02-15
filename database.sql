@@ -279,6 +279,16 @@ CREATE TABLE bill_notifications (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY unique_notification (user_id, notification_type)
 ) ENGINE = InnoDB;
+-- Remember me token tablosu
+CREATE TABLE remember_me_tokens (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    token_hash VARCHAR(255) NOT NULL,
+    expires_at TIMESTAMP NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_token_expiry (expires_at)
+) ENGINE = InnoDB;
 -- İndeksler
 CREATE INDEX idx_incomes_user_date ON incomes(user_id, income_date);
 CREATE INDEX idx_expenses_user_date ON expenses(user_id, due_date);

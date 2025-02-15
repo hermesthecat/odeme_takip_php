@@ -7,12 +7,17 @@
 header('Content-Type: application/json');
 require_once '../includes/db.php';
 require_once '../includes/mail.php';
-session_start();
+require_once '../includes/security.php';
+require_once '../includes/config.php';
 
-// CORS ayarları
-header('Access-Control-Allow-Origin: *');
+// Güvenli session başlatma
+initSecureSession();
+
+// CORS ayarları - Sadece izin verilen originlere
+header('Access-Control-Allow-Origin: ' . ALLOWED_ORIGIN);
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type');
+header('Access-Control-Allow-Headers: Content-Type, X-CSRF-Token');
+header('Access-Control-Allow-Credentials: true');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
@@ -29,6 +34,11 @@ $response = [
 ];
 
 try {
+    // Rate limiting kontrolü
+    if (!checkRateLimit($_SERVER['REMOTE_ADDR'], $action)) {
+        throw new Exception('Çok fazla deneme. Lütfen daha sonra tekrar deneyin.');
+    }
+
     switch ($action) {
         case 'login':
             if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
@@ -36,30 +46,86 @@ try {
             }
 
             $data = json_decode(file_get_contents('php://input'), true);
-            $username = $data['username'] ?? '';
+            $username = sanitizeInput($data['username'] ?? '');
             $password = $data['password'] ?? '';
+            $remember = $data['remember'] ?? false;
 
             if (empty($username) || empty($password)) {
                 throw new Exception('Kullanıcı adı ve şifre gereklidir');
             }
 
-            $stmt = $db->prepare('SELECT id, username, password, first_name, last_name FROM users WHERE username = ? AND status = "active"');
+            $stmt = $db->prepare('
+                SELECT id, username, password, first_name, last_name, status, 
+                       failed_login_attempts, last_failed_login 
+                FROM users 
+                WHERE username = ? AND status != "banned"
+            ');
             $stmt->execute([$username]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
+            // Brute force koruması
+            if ($user && $user['failed_login_attempts'] >= MAX_LOGIN_ATTEMPTS) {
+                $cooldown = strtotime($user['last_failed_login']) + LOGIN_COOLDOWN_PERIOD;
+                if (time() < $cooldown) {
+                    throw new Exception('Hesabınız kilitlendi. Lütfen daha sonra tekrar deneyin.');
+                }
+                // Cooldown süresi geçtiyse sayacı sıfırla
+                $stmt = $db->prepare('UPDATE users SET failed_login_attempts = 0 WHERE id = ?');
+                $stmt->execute([$user['id']]);
+            }
+
             if (!$user || !password_verify($password, $user['password'])) {
+                // Başarısız giriş denemesini kaydet
+                if ($user) {
+                    $stmt = $db->prepare('
+                        UPDATE users 
+                        SET failed_login_attempts = failed_login_attempts + 1,
+                            last_failed_login = NOW()
+                        WHERE id = ?
+                    ');
+                    $stmt->execute([$user['id']]);
+                }
+                logSecurityEvent('failed_login', [
+                    'username' => $username,
+                    'ip' => $_SERVER['REMOTE_ADDR']
+                ]);
                 throw new Exception('Geçersiz kullanıcı adı veya şifre');
             }
 
-            // Oturum başlat
+            if ($user['status'] === 'inactive') {
+                throw new Exception('Hesabınız aktif değil');
+            }
+
+            // Başarılı giriş - güvenli session başlat
+            session_regenerate_id(true);
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['first_name'] = $user['first_name'];
             $_SESSION['last_name'] = $user['last_name'];
+            $_SESSION['last_activity'] = time();
+            $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
+            $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
 
-            // Son giriş zamanını güncelle
-            $stmt = $db->prepare('UPDATE users SET last_login = NOW() WHERE id = ?');
+            // Remember me token oluştur
+            if ($remember) {
+                $token = generateRememberMeToken($user['id']);
+                setRememberMeCookie($token);
+            }
+
+            // Başarılı girişi kaydet ve sayaçları sıfırla
+            $stmt = $db->prepare('
+                UPDATE users 
+                SET last_login = NOW(),
+                    failed_login_attempts = 0,
+                    last_failed_login = NULL
+                WHERE id = ?
+            ');
             $stmt->execute([$user['id']]);
+
+            logSecurityEvent('successful_login', [
+                'user_id' => $user['id'],
+                'ip' => $_SERVER['REMOTE_ADDR']
+            ]);
 
             $response['status'] = true;
             $response['message'] = 'Giriş başarılı';
