@@ -93,6 +93,19 @@ CREATE TABLE savings_goals (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
 ) ENGINE = InnoDB;
+-- Fatura kategorileri tablosu
+CREATE TABLE bill_categories (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    icon VARCHAR(50),
+    color VARCHAR(7),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_bill_category (user_id, name)
+) ENGINE = InnoDB;
+
 -- Fatura hatırlatıcıları tablosu
 CREATE TABLE bill_reminders (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -113,6 +126,7 @@ CREATE TABLE bill_reminders (
     FOREIGN KEY (category) REFERENCES bill_categories(id) ON DELETE
     SET NULL
 ) ENGINE = InnoDB;
+
 -- Kategoriler tablosu
 CREATE TABLE categories (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -242,18 +256,6 @@ CREATE TABLE password_resets (
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE KEY unique_token (token),
     INDEX idx_expires (expires_at)
-) ENGINE = InnoDB;
--- Fatura kategorileri tablosu
-CREATE TABLE bill_categories (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    name VARCHAR(50) NOT NULL,
-    icon VARCHAR(50),
-    color VARCHAR(7),
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    UNIQUE KEY unique_bill_category (user_id, name)
 ) ENGINE = InnoDB;
 -- Fatura ödemeleri tablosu
 CREATE TABLE bill_payments (
