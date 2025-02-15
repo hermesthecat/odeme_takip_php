@@ -1,0 +1,157 @@
+# Project Rules and Patterns
+
+## Project Structure
+
+1. File Organization
+   - PHP files in root for main pages
+   - API endpoints in /api directory
+   - Core includes in /includes directory
+   - Assets in /assets directory with css/js subdirectories
+   - Memory bank files in /memory-bank directory
+
+2. Naming Conventions
+   - PHP files: lowercase with hyphens for multi-word
+   - JavaScript files: camelCase
+   - CSS files: lowercase with hyphens
+   - API endpoints: lowercase
+
+## Development Patterns
+
+### Code Organization
+
+1. PHP Files
+   - Include config.php first
+   - Follow with db.php and functions.php
+   - Security checks at start
+   - HTML output at end
+
+2. API Endpoints
+   - JSON response format
+   - Authentication check first
+   - Input validation before processing
+   - Proper error handling
+   - Transaction management where needed
+
+3. Frontend JavaScript
+   - Module-based organization
+   - Async/await for API calls
+   - Error handling with try/catch
+   - Form validation before submission
+   - Real-time updates where possible
+
+### Security Practices
+
+1. Data Protection
+   - Always use prepared statements
+   - Validate all user input
+   - Sanitize output
+   - Implement CSRF protection
+   - Maintain session security
+
+2. Error Handling
+   - Log errors server-side
+   - Display user-friendly messages
+   - Maintain detailed logs
+   - Handle all edge cases
+   - Proper exception handling
+
+## User Interface Patterns
+
+1. Form Handling
+   - Client-side validation first
+   - Server-side validation always
+   - Clear error messages
+   - Success feedback
+   - Loading states during submission
+
+2. Data Display
+   - Consistent date formatting
+   - Currency with proper formatting
+   - Loading states for async data
+   - Empty state handling
+   - Error state display
+
+## Documentation Standards
+
+1. Code Comments
+   - Function purpose and parameters
+   - Complex logic explanation
+   - Important variable usage
+   - Security considerations
+   - Performance notes
+
+2. API Documentation
+   - Endpoint description
+   - Request/response format
+   - Required parameters
+   - Optional parameters
+   - Error responses
+
+## Current Development Focus
+
+1. Mobile Optimization
+   - Responsive design improvements
+   - Touch interface enhancements
+   - Performance optimization
+   - Mobile-specific features
+
+2. Performance Enhancement
+   - Query optimization
+   - Frontend load time
+   - Cache implementation
+   - API response time
+
+## Project Preferences
+
+1. Configuration
+   - Centralized in includes/config.php
+   - Environment-specific settings
+   - Feature flags
+   - API keys and credentials
+   - System constants
+
+2. Error Management
+   - Detailed logging in production
+   - User-friendly messages
+   - Consistent error format
+   - Proper error levels
+   - Error tracking
+
+3. Testing Approach
+   - Unit tests for core functions
+   - Integration tests for APIs
+   - UI testing for critical paths
+   - Performance benchmarking
+   - Security testing
+
+## Known Challenges
+
+1. Performance Areas
+   - Complex database queries
+   - Large dataset handling
+   - Real-time updates
+   - Mobile responsiveness
+   - Cache management
+
+2. Integration Points
+   - External API reliability
+   - Currency rate updates
+   - Email delivery
+   - File uploads
+   - Session management
+
+## Maintenance Guidelines
+
+1. Code Updates
+   - Follow existing patterns
+   - Maintain documentation
+   - Update test coverage
+   - Consider mobile impact
+   - Performance testing
+
+2. Database Changes
+   - Use transactions
+   - Maintain indexes
+   - Update documentation
+   - Consider data migration
+   - Backup strategy
