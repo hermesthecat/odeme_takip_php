@@ -15,6 +15,32 @@ CREATE TABLE users (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE = InnoDB;
+-- Tekrarlanan işlemler tablosu
+CREATE TABLE recurring_transactions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    type ENUM('income', 'expense') NOT NULL,
+    amount DECIMAL(15, 2) NOT NULL,
+    description TEXT,
+    category VARCHAR(50) NOT NULL,
+    currency VARCHAR(3) NOT NULL DEFAULT 'TRY',
+    interval_type ENUM(
+        'daily',
+        'weekly',
+        'monthly',
+        'quarterly',
+        'yearly'
+    ) NOT NULL,
+    interval_count INT NOT NULL DEFAULT 1,
+    start_date DATE NOT NULL,
+    end_date DATE,
+    last_execution_date DATE,
+    next_execution_date DATE,
+    status ENUM('active', 'paused', 'completed') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE = InnoDB;
 -- Gelirler tablosu
 CREATE TABLE incomes (
     id INT PRIMARY KEY AUTO_INCREMENT,
@@ -81,32 +107,6 @@ CREATE TABLE bill_reminders (
     status ENUM('active', 'inactive') DEFAULT 'active',
     notification_days INT DEFAULT 3,
     last_notification_date DATE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-) ENGINE = InnoDB;
--- Tekrarlanan işlemler tablosu
-CREATE TABLE recurring_transactions (
-    id INT PRIMARY KEY AUTO_INCREMENT,
-    user_id INT NOT NULL,
-    type ENUM('income', 'expense') NOT NULL,
-    amount DECIMAL(15, 2) NOT NULL,
-    description TEXT,
-    category VARCHAR(50) NOT NULL,
-    currency VARCHAR(3) NOT NULL DEFAULT 'TRY',
-    interval_type ENUM(
-        'daily',
-        'weekly',
-        'monthly',
-        'quarterly',
-        'yearly'
-    ) NOT NULL,
-    interval_count INT NOT NULL DEFAULT 1,
-    start_date DATE NOT NULL,
-    end_date DATE,
-    last_execution_date DATE,
-    next_execution_date DATE,
-    status ENUM('active', 'paused', 'completed') DEFAULT 'active',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
