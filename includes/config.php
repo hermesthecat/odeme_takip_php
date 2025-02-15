@@ -61,26 +61,6 @@ define('SUPPORTED_CURRENCIES', json_encode([
     'GBP' => 'İngiliz Sterlini'
 ]));
 
-// Kategori listeleri
-define('INCOME_CATEGORIES', json_encode([
-    'salary' => 'Maaş',
-    'freelance' => 'Serbest Çalışma',
-    'investment' => 'Yatırım',
-    'other' => 'Diğer'
-]));
-
-define('EXPENSE_CATEGORIES', json_encode([
-    'bills' => 'Faturalar',
-    'rent' => 'Kira',
-    'food' => 'Gıda',
-    'transportation' => 'Ulaşım',
-    'shopping' => 'Alışveriş',
-    'health' => 'Sağlık',
-    'education' => 'Eğitim',
-    'entertainment' => 'Eğlence',
-    'other' => 'Diğer'
-]));
-
 // Bildirim ayarları
 define('NOTIFICATION_CHANNELS', json_encode([
     'email' => true,
@@ -131,6 +111,35 @@ define('BILL_REPEAT_INTERVALS', json_encode([
     'yearly' => 'Yıllık'
 ]));
 
+// Varsayılan kategori renkleri
+define('DEFAULT_CATEGORY_COLORS', json_encode([
+    'utilities' => '#F44336',
+    'rent' => '#2196F3',
+    'insurance' => '#4CAF50',
+    'subscription' => '#FFC107',
+    'other' => '#9E9E9E'
+]));
+
+// Kategori listeleri
+define('INCOME_CATEGORIES', json_encode([
+    'salary' => 'Maaş',
+    'freelance' => 'Serbest Çalışma',
+    'investment' => 'Yatırım',
+    'other' => 'Diğer'
+]));
+
+define('EXPENSE_CATEGORIES', json_encode([
+    'bills' => 'Faturalar',
+    'rent' => 'Kira',
+    'food' => 'Gıda',
+    'transportation' => 'Ulaşım',
+    'shopping' => 'Alışveriş',
+    'health' => 'Sağlık',
+    'education' => 'Eğitim',
+    'entertainment' => 'Eğlence',
+    'other' => 'Diğer'
+]));
+
 define('DEFAULT_BILL_NOTIFICATION_DAYS', 3);
 define('DEFAULT_BILL_REPEAT_INTERVAL', 'monthly');
 define('DEFAULT_BILL_STATUS', 'active');
@@ -162,15 +171,6 @@ define('RESPONSE_FORMATS', json_encode([
     'csv' => 'text/csv',
     'pdf' => 'application/pdf',
     'excel' => 'application/vnd.ms-excel'
-]));
-
-// Varsayılan kategori renkleri
-define('DEFAULT_CATEGORY_COLORS', json_encode([
-    'utilities' => '#F44336',
-    'rent' => '#2196F3',
-    'insurance' => '#4CAF50',
-    'subscription' => '#FFC107',
-    'other' => '#9E9E9E'
 ]));
 
 // Yardımcı fonksiyonlar
