@@ -11,7 +11,7 @@ require_once 'includes/functions.php';
 $csrf_token = generateToken();
 
 if (!isLoggedIn()) {
-    header('Location: /pages/auth/login.php');
+    header('Location: /login.php');
     exit;
 }
 ?>
