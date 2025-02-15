@@ -31,6 +31,62 @@ require_once '../includes/db.php';      // Database connection
 require_once '../includes/functions.php'; // Helper functions
 ```
 
+### Category Management Pattern
+
+```php
+// Database-Driven Categories
+CREATE TABLE categories (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    name VARCHAR(50) NOT NULL,
+    display_name VARCHAR(50) NOT NULL,
+    type ENUM('income', 'expense') NOT NULL,
+    icon VARCHAR(50),
+    color VARCHAR(7),
+    is_default BOOLEAN DEFAULT FALSE,
+    parent_id INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_category (user_id, name, type)
+);
+
+// Category Validation Pattern
+function validateCategory($category, $type = 'expense') {
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM categories WHERE name = :name AND type = :type");
+    $stmt->execute(['name' => $category, 'type' => $type]);
+    return $stmt->fetchColumn() > 0;
+}
+
+// Category Creation Pattern
+if (!empty($data['category'])) {
+    $stmt = $pdo->prepare("SELECT id FROM categories WHERE user_id = ? AND name = ? AND type = ?");
+    $stmt->execute([$user_id, $data['category'], $type]);
+    $category = $stmt->fetch();
+    
+    if (!$category) {
+        // Create new category
+        $stmt = $pdo->prepare("
+            INSERT INTO categories (user_id, name, display_name, type, color, icon)
+            VALUES (?, ?, ?, ?, ?, ?)
+        ");
+        $stmt->execute([
+            $user_id,
+            $data['category'],
+            $data['category_display_name'] ?? $data['category'],
+            $type,
+            $data['category_color'] ?? '#' . substr(md5($data['category']), 0, 6),
+            $data['category_icon'] ?? null
+        ]);
+        $category_id = $pdo->lastInsertId();
+    } else {
+        $category_id = $category['id'];
+    }
+}
+```
+
 ## Architecture Overview
 
 ### System Architecture

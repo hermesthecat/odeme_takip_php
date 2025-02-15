@@ -167,8 +167,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
             }
 
             // Tekrarlama aralığı validasyonu
-            $validIntervals = json_decode(VALID_BILL_INTERVALS, true);
-            if (!in_array($data['repeat_interval'] ?? DEFAULT_BILL_REPEAT_INTERVAL, $validIntervals)) {
+            $validIntervals = json_decode(BILL_REPEAT_INTERVALS, true);
+            if (!array_key_exists($data['repeat_interval'] ?? DEFAULT_BILL_REPEAT_INTERVAL, $validIntervals)) {
                 throw new Exception('Geçersiz tekrar aralığı');
             }
 
@@ -190,10 +190,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                             color = COALESCE(VALUES(color), color)
                         ");
 
-                        $defaultColors = json_decode(DEFAULT_CATEGORY_COLORS, true);
-                        $color = $data['category_color'] ??
-                            $defaultColors[$data['category']] ??
-                            '#' . substr(md5($data['category']), 0, 6);
+                        $color = $data['category_color'] ?? '#' . substr(md5($data['category']), 0, 6);
 
                         $stmt->execute([
                             $user_id,
@@ -301,8 +298,8 @@ switch ($_SERVER['REQUEST_METHOD']) {
             }
 
             // Tekrarlama aralığı validasyonu
-            $validIntervals = json_decode(VALID_BILL_INTERVALS, true);
-            if (!in_array($data['repeat_interval'] ?? DEFAULT_BILL_REPEAT_INTERVAL, $validIntervals)) {
+            $validIntervals = json_decode(BILL_REPEAT_INTERVALS, true);
+            if (!array_key_exists($data['repeat_interval'] ?? DEFAULT_BILL_REPEAT_INTERVAL, $validIntervals)) {
                 throw new Exception('Geçersiz tekrar aralığı');
             }
 

@@ -8,6 +8,18 @@
 - ✅ Removed redundant config file
 - ✅ Maintained all functionality and settings
 
+### Category Management Migration
+- ✅ Removed category constants from config.php
+- ✅ Enhanced categories table with display_name and is_default columns
+- ✅ Updated API endpoints to use database-driven categories
+  - bills.php: Now uses bill_categories table with proper ID references
+  - expense.php: Uses categories table with ID-based relationships
+  - income.php: Uses categories table with ID-based relationships
+- ⚠️ Pending database update execution (db_updates.sql)
+  - Add display_name and is_default columns
+  - Migrate existing categories to new structure
+  - Set up default categories
+
 ### Current File Structure
 
 ```
@@ -108,7 +120,13 @@
 
 ### Current Challenges
 
-1. Performance
+1. Category System Migration
+   - Database schema updates pending execution
+   - Frontend updates may be needed for category ID handling
+   - Need to ensure proper category migration for existing data
+   - Consider user experience during transition
+
+2. Performance
    - Query optimization opportunities
    - Frontend load time improvements
    - Cache implementation possibilities

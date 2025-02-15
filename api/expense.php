@@ -23,9 +23,10 @@ switch ($_SERVER['REQUEST_METHOD']) {
         try {
             $filters = [];
             $params = [$user_id];
-            $sql = "SELECT e.*, c.name as category_name, c.icon as category_icon, c.color as category_color 
+            $sql = "SELECT e.*, c.name as category_name, c.display_name as category_display_name, 
+                          c.icon as category_icon, c.color as category_color 
                    FROM expenses e 
-                   LEFT JOIN categories c ON e.category = c.name AND c.user_id = e.user_id 
+                   LEFT JOIN categories c ON e.category = c.id AND c.user_id = e.user_id 
                    WHERE e.user_id = ?";
 
             // Tarih filtresi
@@ -135,6 +136,32 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
             $pdo->beginTransaction();
 
+            // Kategori ID'sini al veya oluştur
+            $category_id = null;
+            if (!empty($data['category'])) {
+                $stmt = $pdo->prepare("SELECT id FROM categories WHERE user_id = ? AND name = ? AND type = 'expense'");
+                $stmt->execute([$user_id, $data['category']]);
+                $category = $stmt->fetch();
+                
+                if (!$category) {
+                    // Yeni kategori oluştur
+                    $stmt = $pdo->prepare("
+                        INSERT INTO categories (user_id, name, display_name, type, color, icon)
+                        VALUES (?, ?, ?, 'expense', ?, ?)
+                    ");
+                    $stmt->execute([
+                        $user_id,
+                        $data['category'],
+                        $data['category_display_name'] ?? $data['category'],
+                        $data['category_color'] ?? '#' . substr(md5($data['category']), 0, 6),
+                        $data['category_icon'] ?? null
+                    ]);
+                    $category_id = $pdo->lastInsertId();
+                } else {
+                    $category_id = $category['id'];
+                }
+            }
+
             // Ana gider kaydı
             $stmt = $pdo->prepare("
                 INSERT INTO expenses (
@@ -150,7 +177,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 $data['description'],
                 $data['due_date'],
                 $data['payment_date'] ?? null,
-                $data['category'],
+                $category_id,
                 $data['status'] ?? 'pending',
                 $data['currency'] ?? 'TRY',
                 json_encode($data['tags'] ?? []),
@@ -227,6 +254,33 @@ switch ($_SERVER['REQUEST_METHOD']) {
 
             $pdo->beginTransaction();
 
+            // Kategori ID'sini al veya oluştur
+            $category_id = null;
+            if (!empty($data['category'])) {
+                $stmt = $pdo->prepare("SELECT id FROM categories WHERE user_id = ? AND name = ? AND type = 'expense'");
+                $stmt->execute([$user_id, $data['category']]);
+                $category = $stmt->fetch();
+                
+                if (!$category) {
+                    // Yeni kategori oluştur
+                    $stmt = $pdo->prepare("
+                        INSERT INTO categories (user_id, name, display_name, type, color, icon)
+                        VALUES (?, ?, ?, 'expense', ?, ?)
+                    ");
+                    $stmt->execute([
+                        $user_id,
+                        $data['category'],
+                        $data['category_display_name'] ?? $data['category'],
+                        $data['category_color'] ?? '#' . substr(md5($data['category']), 0, 6),
+                        $data['category_icon'] ?? null
+                    ]);
+                    $category_id = $pdo->lastInsertId();
+                } else {
+                    $category_id = $category['id'];
+                }
+            }
+
+            // Gider güncelleme
             $stmt = $pdo->prepare("
                 UPDATE expenses 
                 SET amount = ?, description = ?, due_date = ?, 
@@ -240,7 +294,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 $data['description'],
                 $data['due_date'],
                 $data['payment_date'] ?? null,
-                $data['category'],
+                $category_id,
                 $data['status'],
                 $data['currency'] ?? 'TRY',
                 json_encode($data['tags'] ?? []),

@@ -94,50 +94,13 @@ define('DEFAULT_TIMEZONE', 'Europe/Istanbul');
 define('DEFAULT_DATE_FORMAT', 'Y-m-d');
 define('DEFAULT_TIME_FORMAT', 'H:i:s');
 
-// Fatura ayarları
-define('BILL_CATEGORIES', json_encode([
-    'utilities' => 'Faturalar',
-    'rent' => 'Kira',
-    'insurance' => 'Sigorta',
-    'subscription' => 'Abonelikler',
-    'other' => 'Diğer'
-]));
-
+// Fatura tekrar aralıkları
 define('BILL_REPEAT_INTERVALS', json_encode([
     'daily' => 'Günlük',
     'weekly' => 'Haftalık',
     'monthly' => 'Aylık',
     'quarterly' => 'Üç Aylık',
     'yearly' => 'Yıllık'
-]));
-
-// Varsayılan kategori renkleri
-define('DEFAULT_CATEGORY_COLORS', json_encode([
-    'utilities' => '#F44336',
-    'rent' => '#2196F3',
-    'insurance' => '#4CAF50',
-    'subscription' => '#FFC107',
-    'other' => '#9E9E9E'
-]));
-
-// Kategori listeleri
-define('INCOME_CATEGORIES', json_encode([
-    'salary' => 'Maaş',
-    'freelance' => 'Serbest Çalışma',
-    'investment' => 'Yatırım',
-    'other' => 'Diğer'
-]));
-
-define('EXPENSE_CATEGORIES', json_encode([
-    'bills' => 'Faturalar',
-    'rent' => 'Kira',
-    'food' => 'Gıda',
-    'transportation' => 'Ulaşım',
-    'shopping' => 'Alışveriş',
-    'health' => 'Sağlık',
-    'education' => 'Eğitim',
-    'entertainment' => 'Eğlence',
-    'other' => 'Diğer'
 ]));
 
 define('DEFAULT_BILL_NOTIFICATION_DAYS', 3);
@@ -241,8 +204,10 @@ function validateCurrency($currency)
 
 function validateCategory($category, $type = 'expense')
 {
-    $categories = json_decode($type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES, true);
-    return array_key_exists($category, $categories);
+    global $pdo;
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM categories WHERE name = :name AND type = :type");
+    $stmt->execute(['name' => $category, 'type' => $type]);
+    return $stmt->fetchColumn() > 0;
 }
 
 function validateAmount($amount)
