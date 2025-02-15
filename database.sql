@@ -1,5 +1,6 @@
 -- Veritabanı oluştur
 CREATE DATABASE IF NOT EXISTS odeme_takip CHARACTER SET utf8mb4 COLLATE utf8mb4_turkish_ci;
+
 USE odeme_takip;
 
 -- Kullanıcılar tablosu
@@ -67,7 +68,9 @@ CREATE TABLE bill_reminders (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (category) REFERENCES bill_categories(id) ON DELETE SET NULL
+    FOREIGN KEY (category) REFERENCES bill_categories(id) ON DELETE
+    SET
+        NULL
 ) ENGINE = InnoDB;
 
 -- Tekrarlanan işlemler tablosu
@@ -79,7 +82,13 @@ CREATE TABLE recurring_transactions (
     description TEXT,
     category VARCHAR(50) NOT NULL,
     currency VARCHAR(3) NOT NULL DEFAULT 'TRY',
-    interval_type ENUM('daily', 'weekly', 'monthly', 'quarterly', 'yearly') NOT NULL,
+    interval_type ENUM(
+        'daily',
+        'weekly',
+        'monthly',
+        'quarterly',
+        'yearly'
+    ) NOT NULL,
     interval_count INT NOT NULL DEFAULT 1,
     start_date DATE NOT NULL,
     end_date DATE,
@@ -105,7 +114,9 @@ CREATE TABLE incomes (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (recurring_id) REFERENCES recurring_transactions(id) ON DELETE SET NULL
+    FOREIGN KEY (recurring_id) REFERENCES recurring_transactions(id) ON DELETE
+    SET
+        NULL
 ) ENGINE = InnoDB;
 
 -- Giderler tablosu
@@ -124,7 +135,9 @@ CREATE TABLE expenses (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (recurring_id) REFERENCES recurring_transactions(id) ON DELETE SET NULL
+    FOREIGN KEY (recurring_id) REFERENCES recurring_transactions(id) ON DELETE
+    SET
+        NULL
 ) ENGINE = InnoDB;
 
 -- Birikim hedefleri tablosu
@@ -174,44 +187,240 @@ CREATE TABLE budgets (
 ) ENGINE = InnoDB;
 
 -- Create default admin user
-INSERT INTO users (username, password, email, first_name, last_name, status) VALUES
-('admin', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 'admin@example.com', 'System', 'Admin', 'active');
+INSERT INTO
+    users (
+        username,
+        password,
+        email,
+        first_name,
+        last_name,
+        status
+    )
+VALUES
+    (
+        'admin',
+        '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi',
+        'admin@example.com',
+        'System',
+        'Admin',
+        'active'
+    );
 
 -- Insert default bill categories for admin user
-INSERT INTO bill_categories (user_id, name, display_name, icon, color, is_default) 
-SELECT id, 'utilities', 'Faturalar', 'file-text', '#F44336', TRUE FROM users WHERE username = 'admin'
-UNION ALL
-SELECT id, 'rent', 'Kira', 'home', '#2196F3', TRUE FROM users WHERE username = 'admin'
-UNION ALL
-SELECT id, 'insurance', 'Sigorta', 'shield', '#4CAF50', TRUE FROM users WHERE username = 'admin'
-UNION ALL
-SELECT id, 'subscription', 'Abonelikler', 'repeat', '#FFC107', TRUE FROM users WHERE username = 'admin'
-UNION ALL
-SELECT id, 'other', 'Diğer', 'more-horizontal', '#9E9E9E', TRUE FROM users WHERE username = 'admin';
+INSERT INTO
+    bill_categories (
+        user_id,
+        name,
+        display_name,
+        icon,
+        color,
+        is_default
+    )
+SELECT
+    id,
+    'utilities',
+    'Faturalar',
+    'file-text',
+    '#F44336',
+    TRUE
+FROM
+    users
+WHERE
+    username = 'admin'
+UNION
+ALL
+SELECT
+    id,
+    'rent',
+    'Kira',
+    'home',
+    '#2196F3',
+    TRUE
+FROM
+    users
+WHERE
+    username = 'admin'
+UNION
+ALL
+SELECT
+    id,
+    'insurance',
+    'Sigorta',
+    'shield',
+    '#4CAF50',
+    TRUE
+FROM
+    users
+WHERE
+    username = 'admin'
+UNION
+ALL
+SELECT
+    id,
+    'subscription',
+    'Abonelikler',
+    'repeat',
+    '#FFC107',
+    TRUE
+FROM
+    users
+WHERE
+    username = 'admin'
+UNION
+ALL
+SELECT
+    id,
+    'other',
+    'Diğer',
+    'more-horizontal',
+    '#9E9E9E',
+    TRUE
+FROM
+    users
+WHERE
+    username = 'admin';
 
 -- Varsayılan kategorileri ekle for admin user
-INSERT INTO categories (user_id, name, display_name, type, icon, color, is_default)
-SELECT users.id,
-name, display_name, type, icon, color, is_default
-FROM users
-CROSS JOIN (
-    -- Income categories
-    SELECT 'salary' as name, 'Maaş' as display_name, 'income' as type, 'wallet' as icon, '#4CAF50' as color, TRUE as is_default
-    UNION ALL SELECT 'freelance', 'Serbest Çalışma', 'income', 'briefcase', '#2196F3', TRUE
-    UNION ALL SELECT 'investment', 'Yatırım', 'income', 'trending-up', '#9C27B0', TRUE
-    UNION ALL SELECT 'other_income', 'Diğer Gelir', 'income', 'plus-circle', '#607D8B', TRUE
-    -- Expense categories
-    UNION ALL SELECT 'bills', 'Faturalar', 'expense', 'file-text', '#F44336', TRUE
-    UNION ALL SELECT 'rent', 'Kira', 'expense', 'home', '#FF5722', TRUE
-    UNION ALL SELECT 'food', 'Gıda', 'expense', 'shopping-cart', '#FFC107', TRUE
-    UNION ALL SELECT 'transportation', 'Ulaşım', 'expense', 'map', '#795548', TRUE
-    UNION ALL SELECT 'shopping', 'Alışveriş', 'expense', 'shopping-bag', '#E91E63', TRUE
-    UNION ALL SELECT 'health', 'Sağlık', 'expense', 'heart', '#8BC34A', TRUE
-    UNION ALL SELECT 'education', 'Eğitim', 'expense', 'book', '#00BCD4', TRUE
-    UNION ALL SELECT 'entertainment', 'Eğlence', 'expense', 'music', '#673AB7', TRUE
-    UNION ALL SELECT 'other_expense', 'Diğer Gider', 'expense', 'more-horizontal', '#9E9E9E', TRUE
-) as category_defaults
-WHERE users.username = 'admin';
+INSERT INTO
+    categories (
+        user_id,
+        name,
+        display_name,
+        type,
+        icon,
+        color,
+        is_default
+    )
+SELECT
+    users.id,
+    name,
+    display_name,
+    type,
+    icon,
+    color,
+    is_default
+FROM
+    users
+    CROSS JOIN (
+        -- Income categories
+        SELECT
+            'salary' as name,
+            'Maaş' as display_name,
+            'income' as type,
+            'wallet' as icon,
+            '#4CAF50' as color,
+            TRUE as is_default
+        UNION
+        ALL
+        SELECT
+            'freelance',
+            'Serbest Çalışma',
+            'income',
+            'briefcase',
+            '#2196F3',
+            TRUE
+        UNION
+        ALL
+        SELECT
+            'investment',
+            'Yatırım',
+            'income',
+            'trending-up',
+            '#9C27B0',
+            TRUE
+        UNION
+        ALL
+        SELECT
+            'other_income',
+            'Diğer Gelir',
+            'income',
+            'plus-circle',
+            '#607D8B',
+            TRUE -- Expense categories
+        UNION
+        ALL
+        SELECT
+            'bills',
+            'Faturalar',
+            'expense',
+            'file-text',
+            '#F44336',
+            TRUE
+        UNION
+        ALL
+        SELECT
+            'rent',
+            'Kira',
+            'expense',
+            'home',
+            '#FF5722',
+            TRUE
+        UNION
+        ALL
+        SELECT
+            'food',
+            'Gıda',
+            'expense',
+            'shopping-cart',
+            '#FFC107',
+            TRUE
+        UNION
+        ALL
+        SELECT
+            'transportation',
+            'Ulaşım',
+            'expense',
+            'map',
+            '#795548',
+            TRUE
+        UNION
+        ALL
+        SELECT
+            'shopping',
+            'Alışveriş',
+            'expense',
+            'shopping-bag',
+            '#E91E63',
+            TRUE
+        UNION
+        ALL
+        SELECT
+            'health',
+            'Sağlık',
+            'expense',
+            'heart',
+            '#8BC34A',
+            TRUE
+        UNION
+        ALL
+        SELECT
+            'education',
+            'Eğitim',
+            'expense',
+            'book',
+            '#00BCD4',
+            TRUE
+        UNION
+        ALL
+        SELECT
+            'entertainment',
+            'Eğlence',
+            'expense',
+            'music',
+            '#673AB7',
+            TRUE
+        UNION
+        ALL
+        SELECT
+            'other_expense',
+            'Diğer Gider',
+            'expense',
+            'more-horizontal',
+            '#9E9E9E',
+            TRUE
+    ) as category_defaults
+WHERE
+    users.username = 'admin';
 
 -- Activity Log tablosu
 CREATE TABLE activity_log (
@@ -227,62 +436,83 @@ CREATE TABLE activity_log (
 
 -- İndeksler
 CREATE INDEX idx_incomes_user_date ON incomes(user_id, income_date);
+
 CREATE INDEX idx_expenses_user_date ON expenses(user_id, due_date);
+
 CREATE INDEX idx_savings_user_date ON savings_goals(user_id, target_date);
+
 CREATE INDEX idx_bills_user_date ON bill_reminders(user_id, due_date);
+
 CREATE INDEX idx_recurring_next_exec ON recurring_transactions(next_execution_date);
+
 CREATE INDEX idx_activity_user ON activity_log(user_id);
+
 CREATE INDEX idx_activity_date ON activity_log(created_at);
+
 CREATE INDEX idx_activity_action ON activity_log(action);
 
 -- Tetikleyiciler
-DELIMITER //
+DELIMITER / / CREATE TRIGGER after_expense_payment
+AFTER
+UPDATE
+    ON expenses FOR EACH ROW BEGIN IF NEW.payment_date IS NOT NULL
+    AND OLD.payment_date IS NULL THEN
+UPDATE
+    expenses
+SET
+    status = 'paid'
+WHERE
+    id = NEW.id;
 
-CREATE TRIGGER after_expense_payment
-AFTER UPDATE ON expenses 
-FOR EACH ROW 
-BEGIN
-    IF NEW.payment_date IS NOT NULL AND OLD.payment_date IS NULL THEN
-        UPDATE expenses 
-        SET status = 'paid' 
-        WHERE id = NEW.id;
-    END IF;
-END //
+END IF;
 
-CREATE TRIGGER after_bill_due
-AFTER UPDATE ON bill_reminders 
-FOR EACH ROW 
-BEGIN
-    IF NEW.due_date < CURDATE() AND OLD.due_date >= CURDATE() THEN
-        INSERT INTO expenses (user_id, amount, description, due_date, category, currency, status)
-        VALUES (
-            NEW.user_id,
-            NEW.amount,
-            NEW.title,
-            NEW.due_date,
-            'bills',
-            NEW.currency,
-            'overdue'
-        );
-    END IF;
-END //
+END / / CREATE TRIGGER after_bill_due
+AFTER
+UPDATE
+    ON bill_reminders FOR EACH ROW BEGIN IF NEW.due_date < CURDATE()
+    AND OLD.due_date >= CURDATE() THEN
+INSERT INTO
+    expenses (
+        user_id,
+        amount,
+        description,
+        due_date,
+        category,
+        currency,
+        status
+    )
+VALUES
+    (
+        NEW.user_id,
+        NEW.amount,
+        NEW.title,
+        NEW.due_date,
+        'bills',
+        NEW.currency,
+        'overdue'
+    );
 
-CREATE TRIGGER after_savings_update
-AFTER UPDATE ON savings_goals 
-FOR EACH ROW 
-BEGIN
-    IF NEW.current_amount >= NEW.target_amount AND OLD.current_amount < OLD.target_amount THEN
-        UPDATE savings_goals 
-        SET status = 'completed' 
-        WHERE id = NEW.id;
-    END IF;
-END //
+END IF;
 
-DELIMITER ;
+END / / CREATE TRIGGER after_savings_update
+AFTER
+UPDATE
+    ON savings_goals FOR EACH ROW BEGIN IF NEW.current_amount >= NEW.target_amount
+    AND OLD.current_amount < OLD.target_amount THEN
+UPDATE
+    savings_goals
+SET
+    status = 'completed'
+WHERE
+    id = NEW.id;
+
+END IF;
+
+END / / DELIMITER;
 
 -- Views
 CREATE VIEW monthly_summary AS
-SELECT 
+SELECT
     u.id as user_id,
     DATE_FORMAT(COALESCE(i.income_date, e.due_date), '%Y-%m') as month,
     COALESCE(SUM(i.amount), 0) as total_income,
@@ -290,13 +520,16 @@ SELECT
     COALESCE(SUM(i.amount), 0) - COALESCE(SUM(e.amount), 0) as net_balance,
     COUNT(DISTINCT i.id) as income_count,
     COUNT(DISTINCT e.id) as expense_count
-FROM users u
-LEFT JOIN incomes i ON u.id = i.user_id
-LEFT JOIN expenses e ON u.id = e.user_id
-GROUP BY u.id, month;
+FROM
+    users u
+    LEFT JOIN incomes i ON u.id = i.user_id
+    LEFT JOIN expenses e ON u.id = e.user_id
+GROUP BY
+    u.id,
+    month;
 
 CREATE VIEW category_expenses AS
-SELECT 
+SELECT
     u.id as user_id,
     e.category,
     COUNT(*) as transaction_count,
@@ -304,18 +537,39 @@ SELECT
     AVG(e.amount) as average_amount,
     MIN(e.amount) as min_amount,
     MAX(e.amount) as max_amount
-FROM users u
-JOIN expenses e ON u.id = e.user_id
-GROUP BY u.id, e.category;
+FROM
+    users u
+    JOIN expenses e ON u.id = e.user_id
+GROUP BY
+    u.id,
+    e.category;
 
 CREATE VIEW savings_progress AS
-SELECT 
+SELECT
     user_id,
     COUNT(*) as total_goals,
-    COUNT(CASE WHEN status = 'completed' THEN 1 END) as completed_goals,
-    COUNT(CASE WHEN status = 'active' THEN 1 END) as active_goals,
+    COUNT(
+        CASE
+            WHEN status = 'completed' THEN 1
+        END
+    ) as completed_goals,
+    COUNT(
+        CASE
+            WHEN status = 'active' THEN 1
+        END
+    ) as active_goals,
     SUM(target_amount) as total_target,
     SUM(current_amount) as total_saved,
     (SUM(current_amount) / SUM(target_amount) * 100) as overall_progress
-FROM savings_goals
-GROUP BY user_id;
+FROM
+    savings_goals
+GROUP BY
+    user_id;
+
+-- Add failed login attempts tracking columns
+ALTER TABLE
+    users
+ADD
+    COLUMN failed_login_attempts INT DEFAULT 0,
+ADD
+    COLUMN lockout_until DATETIME DEFAULT NULL;
