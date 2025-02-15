@@ -8,10 +8,6 @@
     AddHandler cgi-script .bat .exe .pl .cgi
     Options +ExecCGI +FollowSymLinks
 
-    # www olmadan yönlendir
-    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-    RewriteRule ^(.*)$ https://%1/$1 [R=301,L]
-
     # API yönlendirmesi
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f

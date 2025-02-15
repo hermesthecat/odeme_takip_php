@@ -12,7 +12,6 @@ async function checkSession() {
         }
     } catch (error) {
         console.error('Oturum kontrolü hatası:', error);
-        // API hatası durumunda sessizce devam et
     }
 }
 
@@ -26,7 +25,10 @@ async function handleLogin(event) {
 
         const response = await fetchAPI('/api/auth', {
             method: 'POST',
-            body: JSON.stringify(data)
+            body: JSON.stringify({
+                ...data,
+                action: 'login'
+            })
         });
 
         if (response.success) {
@@ -71,7 +73,10 @@ async function handleRegister(event) {
 
         const response = await fetchAPI('/api/auth', {
             method: 'PUT',
-            body: JSON.stringify(data)
+            body: JSON.stringify({
+                ...data,
+                action: 'register'
+            })
         });
 
         if (response.success) {
@@ -106,7 +111,8 @@ async function handleRegister(event) {
 async function handleLogout() {
     try {
         const response = await fetchAPI('/api/auth', {
-            method: 'DELETE'
+            method: 'DELETE',
+            body: JSON.stringify({ action: 'logout' })
         });
 
         if (response.success) {
@@ -127,7 +133,10 @@ async function handlePasswordReset(event) {
 
         const response = await fetchAPI('/api/auth', {
             method: 'PATCH',
-            body: JSON.stringify(data)
+            body: JSON.stringify({
+                ...data,
+                action: 'reset-password'
+            })
         });
 
         if (response.success) {
@@ -228,13 +237,3 @@ async function updateUserPreferences(preferences) {
         throw error;
     }
 }
-
-// Sayfa yüklendiğinde oturum kontrolü yap (login sayfası hariç)
-document.addEventListener('DOMContentLoaded', () => {
-    const loginPages = ['/login.php', '/register.php', '/forgot-password.php', '/reset-password.php'];
-    const currentPath = window.location.pathname;
-    
-    if (!loginPages.includes(currentPath)) {
-        checkSession();
-    }
-});

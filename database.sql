@@ -213,12 +213,27 @@ CROSS JOIN (
 ) as category_defaults
 WHERE users.username = 'admin';
 
+-- Activity Log tablosu
+CREATE TABLE activity_log (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    action VARCHAR(50) NOT NULL,
+    description TEXT,
+    ip_address VARCHAR(45),
+    additional_data JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE = InnoDB;
+
 -- İndeksler
 CREATE INDEX idx_incomes_user_date ON incomes(user_id, income_date);
 CREATE INDEX idx_expenses_user_date ON expenses(user_id, due_date);
 CREATE INDEX idx_savings_user_date ON savings_goals(user_id, target_date);
 CREATE INDEX idx_bills_user_date ON bill_reminders(user_id, due_date);
 CREATE INDEX idx_recurring_next_exec ON recurring_transactions(next_execution_date);
+CREATE INDEX idx_activity_user ON activity_log(user_id);
+CREATE INDEX idx_activity_date ON activity_log(created_at);
+CREATE INDEX idx_activity_action ON activity_log(action);
 
 -- Tetikleyiciler
 DELIMITER //

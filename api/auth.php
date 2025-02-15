@@ -6,6 +6,7 @@
  */
 
 header('Content-Type: application/json');
+require_once '../includes/config.php';
 require_once '../includes/db.php';
 //require_once '../includes/mail.php';
 require_once '../includes/security.php';
@@ -22,7 +23,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 }
 
 // İstek tipini al
-$action = isset($_GET['action']) ? $_GET['action'] : '';
+$action = isset($_GET['action']) ? $_GET['action'] : 
+         (isset($_POST['action']) ? $_POST['action'] : 
+         (json_decode(file_get_contents('php://input'), true)['action'] ?? ''));
 
 // Yanıt şablonu
 $response = [
