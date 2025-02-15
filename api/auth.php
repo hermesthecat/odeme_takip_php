@@ -9,10 +9,7 @@ header('Content-Type: application/json');
 require_once '../includes/db.php';
 //require_once '../includes/mail.php';
 require_once '../includes/security.php';
-require_once '../includes/config.php';
 
-// Güvenli session başlatma
-initSecureSession();
 
 // CORS ayarları - Sadece izin verilen originlere
 header('Access-Control-Allow-Origin: ' . ALLOWED_ORIGIN);
@@ -55,7 +52,7 @@ try {
                 throw new Exception('Kullanıcı adı ve şifre gereklidir');
             }
 
-            $stmt = $db->prepare('
+            $stmt = $pdo->prepare('
                 SELECT id, username, password, first_name, last_name, status, 
                        failed_login_attempts, last_failed_login 
                 FROM users 
@@ -71,14 +68,14 @@ try {
                     throw new Exception('Hesabınız kilitlendi. Lütfen daha sonra tekrar deneyin.');
                 }
                 // Cooldown süresi geçtiyse sayacı sıfırla
-                $stmt = $db->prepare('UPDATE users SET failed_login_attempts = 0 WHERE id = ?');
+                $stmt = $pdo->prepare('UPDATE users SET failed_login_attempts = 0 WHERE id = ?');
                 $stmt->execute([$user['id']]);
             }
 
             if (!$user || !password_verify($password, $user['password'])) {
                 // Başarısız giriş denemesini kaydet
                 if ($user) {
-                    $stmt = $db->prepare('
+                    $stmt = $pdo->prepare('
                         UPDATE users 
                         SET failed_login_attempts = failed_login_attempts + 1,
                             last_failed_login = NOW()
@@ -107,14 +104,17 @@ try {
             $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
             $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
 
-            // Remember me token oluştur
+        // Remember me token oluştur
             if ($remember) {
                 $token = generateRememberMeToken($user['id']);
                 setRememberMeCookie($token);
             }
+            
+            // Güvenli session başlatma
+            session_regenerate_id(true);
 
             // Başarılı girişi kaydet ve sayaçları sıfırla
-            $stmt = $db->prepare('
+            $stmt = $pdo->prepare('
                 UPDATE users 
                 SET last_login = NOW(),
                     failed_login_attempts = 0,
@@ -171,7 +171,7 @@ try {
             }
 
             // Kullanıcı adı ve email kontrolü
-            $stmt = $db->prepare('SELECT COUNT(*) FROM users WHERE username = ? OR email = ?');
+            $stmt = $pdo->prepare('SELECT COUNT(*) FROM users WHERE username = ? OR email = ?');
             $stmt->execute([$username, $email]);
             if ($stmt->fetchColumn() > 0) {
                 throw new Exception('Bu kullanıcı adı veya email zaten kullanımda');
@@ -179,7 +179,7 @@ try {
 
             // Yeni kullanıcı oluştur
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $db->prepare('INSERT INTO users (username, password, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)');
+            $stmt = $pdo->prepare('INSERT INTO users (username, password, email, first_name, last_name) VALUES (?, ?, ?, ?, ?)');
             $stmt->execute([$username, $hashedPassword, $email, $firstName, $lastName]);
 
             $response['status'] = true;
@@ -199,7 +199,7 @@ try {
             }
 
             // Email kontrolü
-            $stmt = $db->prepare('SELECT id, username, first_name, email FROM users WHERE email = ? AND status = "active"');
+            $stmt = $pdo->prepare('SELECT id, username, first_name, email FROM users WHERE email = ? AND status = "active"');
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -212,11 +212,11 @@ try {
             $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
 
             // Varolan token'ları temizle
-            $stmt = $db->prepare('DELETE FROM password_resets WHERE user_id = ?');
+            $stmt = $pdo->prepare('DELETE FROM password_resets WHERE user_id = ?');
             $stmt->execute([$user['id']]);
 
             // Yeni token ekle
-            $stmt = $db->prepare('INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)');
+            $stmt = $pdo->prepare('INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)');
             $stmt->execute([$user['id'], $token, $expires]);
 
             // Email gönder
@@ -248,7 +248,7 @@ try {
             }
 
             // Token kontrolü
-            $stmt = $db->prepare('
+            $stmt = $pdo->prepare('
                 SELECT user_id 
                 FROM password_resets 
                 WHERE token = ? 
@@ -281,7 +281,7 @@ try {
             }
 
             // Token kontrolü
-            $stmt = $db->prepare('
+            $stmt = $pdo->prepare('
                 SELECT user_id 
                 FROM password_resets 
                 WHERE token = ? 
@@ -297,11 +297,11 @@ try {
 
             // Şifreyi güncelle
             $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-            $stmt = $db->prepare('UPDATE users SET password = ? WHERE id = ?');
+            $stmt = $pdo->prepare('UPDATE users SET password = ? WHERE id = ?');
             $stmt->execute([$hashedPassword, $reset['user_id']]);
 
             // Token'ı kullanıldı olarak işaretle
-            $stmt = $db->prepare('UPDATE password_resets SET used = 1 WHERE token = ?');
+            $stmt = $pdo->prepare('UPDATE password_resets SET used = 1 WHERE token = ?');
             $stmt->execute([$token]);
 
             $response['status'] = true;

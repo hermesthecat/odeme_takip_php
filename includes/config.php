@@ -35,10 +35,10 @@ define('API_RATE_LIMIT', 100);
 define('API_CACHE_TIME', 300);
 
 // Veritabanı ayarları
-define('DB_HOST', 'localhost');
+define('DB_HOST', '127.0.0.1');
 define('DB_NAME', 'odeme_takip');
-define('DB_USER', 'user');
-define('DB_PASS', 'password');
+define('DB_USER', 'root');
+define('DB_PASS', 'root');
 define('DB_CHARSET', 'utf8mb4');
 
 // Email ayarları
@@ -236,7 +236,7 @@ function sanitizeOutput($data)
 }
 
 // API rate limiting
-function checkRateLimit()
+function checkApiRateLimit()
 {
     $ip = $_SERVER['REMOTE_ADDR'];
     $cache_file = CACHE_PATH . "/rate_limit_$ip.txt";
@@ -284,6 +284,14 @@ function setCache($key, $value)
     file_put_contents($cache_file, json_encode($data));
 }
 
-// API isteği başlatma
+// Session ayarları
+session_name('butce_session');
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', 1);
+ini_set('session.use_strict_mode', 1);
+ini_set('session.gc_maxlifetime', 3600);
+ini_set('session.use_cookies', 1);
+ini_set('session.use_only_cookies', 1);
+
+// Oturumu başlat
 session_start();
-checkRateLimit();

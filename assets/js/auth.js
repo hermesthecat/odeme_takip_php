@@ -6,12 +6,13 @@
 // Oturum kontrolü
 async function checkSession() {
     try {
-        const response = await fetchAPI('/api/auth');
+        const response = await fetchAPI('/api/auth?action=check');
         if (!response.success) {
             window.location.href = '/login.php';
         }
     } catch (error) {
         console.error('Oturum kontrolü hatası:', error);
+        // API hatası durumunda sessizce devam et
     }
 }
 
@@ -228,5 +229,12 @@ async function updateUserPreferences(preferences) {
     }
 }
 
-// Sayfa yüklendiğinde oturum kontrolü yap
-document.addEventListener('DOMContentLoaded', checkSession); 
+// Sayfa yüklendiğinde oturum kontrolü yap (login sayfası hariç)
+document.addEventListener('DOMContentLoaded', () => {
+    const loginPages = ['/login.php', '/register.php', '/forgot-password.php', '/reset-password.php'];
+    const currentPath = window.location.pathname;
+    
+    if (!loginPages.includes(currentPath)) {
+        checkSession();
+    }
+});

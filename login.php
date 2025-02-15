@@ -4,11 +4,12 @@
  * @author A. Kerem Gök
  */
 
+require_once 'includes/config.php';
 require_once 'includes/db.php';
 require_once 'includes/functions.php';
 
-// Zaten giriş yapmışsa ana sayfaya yönlendir
-if (isLoggedIn()) {
+// Zaten geçerli bir oturum varsa ana sayfaya yönlendir
+if (isset($_SESSION['user_id'])) {
     header('Location: /');
     exit;
 }

@@ -4,13 +4,15 @@
  * @author A. Kerem Gök
  */
 
-require_once 'includes/db.php';
-require_once 'includes/functions.php';
+require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/db.php';
+require_once __DIR__ . '/functions.php';
 
 // CSRF token oluştur
 $csrf_token = generateToken();
 
-if (!isLoggedIn()) {
+// Login sayfasında değilsek ve giriş yapılmamışsa login sayfasına yönlendir
+if (basename($_SERVER['PHP_SELF']) !== 'login.php' && !isset($_SESSION['user_id'])) {
     header('Location: /login.php');
     exit;
 }

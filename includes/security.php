@@ -15,19 +15,15 @@ define('REMEMBER_ME_LIFETIME', 2592000); // 30 gün
  */
 function initSecureSession()
 {
-    ini_set('session.cookie_httponly', 1);
-    ini_set('session.cookie_secure', 1);
-    ini_set('session.use_strict_mode', 1);
-    ini_set('session.gc_maxlifetime', SESSION_LIFETIME);
+    if (!isset($_SESSION['last_activity'])) {
+        $_SESSION['last_activity'] = time();
+        return true;
+    }
 
-    session_start();
-
-    if (
-        isset($_SESSION['last_activity']) &&
-        (time() - $_SESSION['last_activity'] > SESSION_LIFETIME)
-    ) {
+    if (time() - $_SESSION['last_activity'] > SESSION_LIFETIME) {
         session_unset();
         session_destroy();
+        session_start();
         return false;
     }
 
@@ -40,7 +36,7 @@ function initSecureSession()
  */
 function checkRateLimit($ip, $action)
 {
-    global $db;
+    global $pdo;
 
     $timeWindow = 900; // 15 dakika
     $maxAttempts = [
@@ -51,7 +47,7 @@ function checkRateLimit($ip, $action)
 
     $limit = $maxAttempts[$action] ?? 10;
 
-    $stmt = $db->prepare('
+    $stmt = $pdo->prepare('
         SELECT COUNT(*) 
         FROM activity_log 
         WHERE ip_address = ? 
@@ -79,8 +75,8 @@ function generateRememberMeToken($userId)
     $token = bin2hex(random_bytes(32));
     $hash = password_hash($token, PASSWORD_DEFAULT);
 
-    global $db;
-    $stmt = $db->prepare('
+    global $pdo;
+    $stmt = $pdo->prepare('
         INSERT INTO remember_me_tokens (
             user_id, token_hash, expires_at
         ) VALUES (?, ?, DATE_ADD(NOW(), INTERVAL ? SECOND))
@@ -114,9 +110,9 @@ function setRememberMeCookie($token)
  */
 function logSecurityEvent($event, $details = [])
 {
-    global $db;
+    global $pdo;
 
-    $stmt = $db->prepare('
+    $stmt = $pdo->prepare('
         INSERT INTO activity_log (
             user_id, action, entity_type,
             entity_id, details, ip_address,
