@@ -3,6 +3,7 @@
 ## Architecture Overview
 
 ### System Architecture
+
 ```
 [Client Layer]
     │
@@ -35,6 +36,7 @@
 ## Design Patterns
 
 ### 1. Authentication & Security
+
 - CSRF token implementation for form security
 - Session-based authentication
 - Password hashing and salting
@@ -42,6 +44,7 @@
 - Input sanitization and validation
 
 ### 2. Database Design
+
 - Normalized schema design (3NF)
 - Foreign key constraints for referential integrity
 - JSON columns for flexible data storage
@@ -49,6 +52,7 @@
 - Activity logging for audit trails
 
 ### 3. API Structure
+
 - RESTful endpoints organization
 - Resource-based URL routing
 - Standardized response formats
@@ -56,6 +60,7 @@
 - Rate limiting and caching
 
 ### 4. Frontend Organization
+
 - Component-based structure
 - Event-driven interactions
 - Asynchronous data loading
@@ -65,6 +70,7 @@
 ## Key Technical Decisions
 
 ### Database Schema
+
 - Users and authentication
 - Financial transactions (income/expenses)
 - Categories and tags
@@ -74,6 +80,7 @@
 - Exchange rates
 
 ### Security Implementation
+
 ```php
 // CSRF Protection
 generateToken()
@@ -89,6 +96,7 @@ isLoggedIn()
 ```
 
 ### API Response Format
+
 ```json
 {
   "status": "success|error",
@@ -101,16 +109,19 @@ isLoggedIn()
 ## Component Relationships
 
 ### 1. Authentication Flow
+
 ```
 Login/Register → Session Management → Access Control
 ```
 
 ### 2. Transaction Processing
+
 ```
 Input Validation → Currency Conversion → Database Storage → Activity Log
 ```
 
 ### 3. Reporting System
+
 ```
 Data Aggregation → Analysis → Visualization → Export
 ```
@@ -118,16 +129,19 @@ Data Aggregation → Analysis → Visualization → Export
 ## Architectural Patterns
 
 ### 1. MVC Pattern
+
 - Models: Database interactions
 - Views: PHP templates and JS rendering
 - Controllers: Business logic and routing
 
 ### 2. Repository Pattern
+
 - Separation of data access logic
 - Consistent interface for data operations
 - Centralized data manipulation
 
 ### 3. Service Layer
+
 - Business logic encapsulation
 - Transaction management
 - External service integration
@@ -135,12 +149,14 @@ Data Aggregation → Analysis → Visualization → Export
 ## Error Handling
 
 ### 1. Exception Hierarchy
+
 - Database errors
 - Validation errors
 - Authentication errors
 - Integration errors
 
 ### 2. Error Response Format
+
 ```json
 {
   "status": "error",
@@ -153,12 +169,14 @@ Data Aggregation → Analysis → Visualization → Export
 ## Performance Optimizations
 
 ### 1. Caching Strategy
+
 - API response caching
 - Exchange rate caching
 - Session data caching
 - Database query caching
 
 ### 2. Query Optimization
+
 - Proper indexing
 - Query planning
 - Batch operations
@@ -167,12 +185,14 @@ Data Aggregation → Analysis → Visualization → Export
 ## Integration Patterns
 
 ### 1. External APIs
+
 - RESTful integration
 - Webhook handling
 - Rate limit management
 - Error handling
 
 ### 2. Internal Services
+
 - Modular design
 - Service discovery
 - Load balancing
@@ -181,6 +201,7 @@ Data Aggregation → Analysis → Visualization → Export
 ## Development Patterns
 
 ### 1. Code Organization
+
 ```
 /api          - API endpoints
 /assets       - Static resources
@@ -189,6 +210,7 @@ Data Aggregation → Analysis → Visualization → Export
 ```
 
 ### 2. Naming Conventions
+
 - camelCase for JavaScript
 - snake_case for PHP/MySQL
 - PascalCase for classes
@@ -197,12 +219,14 @@ Data Aggregation → Analysis → Visualization → Export
 ## Maintenance Patterns
 
 ### 1. Logging
+
 - Error logging
 - Activity logging
 - Performance monitoring
 - Security auditing
 
 ### 2. Backup Strategy
+
 - Database backups
 - Configuration backups
 - User data protection
