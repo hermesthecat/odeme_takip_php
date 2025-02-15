@@ -36,7 +36,7 @@ try {
     // Check if the username exists
     $stmt = $pdo->prepare('
         SELECT id, username, password, first_name, last_name, email, status,
-               failed_login_attempts, lockout_until 
+               failed_login_attempts, lockout_until, last_login
         FROM users 
         WHERE username = ?
     ');
