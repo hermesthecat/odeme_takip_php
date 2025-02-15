@@ -1,29 +1,82 @@
 # Active Context: Personal Finance Management System
 
+## Recent Changes
+
+### Configuration Consolidation
+- ✅ Merged api/config.php into includes/config.php
+- ✅ Updated all API endpoints to use consolidated config
+- ✅ Removed redundant config file
+- ✅ Maintained all functionality and settings
+
+### Current File Structure
+
+```
+/includes/
+  ├── config.php      // Unified configuration
+  ├── db.php         // Database connection
+  ├── functions.php  // Helper functions
+  ├── security.php   // Security functions
+  └── mail.php       // Email functionality
+
+/api/
+  ├── auth.php       // Authentication
+  ├── bills.php     // Bill management
+  ├── currency.php  // Exchange rates
+  ├── expense.php   // Expense tracking
+  ├── income.php    // Income management
+  ├── reports.php   // Reporting
+  └── savings.php   // Savings goals
+```
+
+### Core Configuration
+
+1. Application Settings
+   - App constants
+   - Database settings
+   - Email configuration
+   - API settings
+   - Security parameters
+   - File paths
+
+2. Feature Settings
+   - Currency support
+   - Categories
+   - Notifications
+   - File uploads
+   - Cache settings
+   - Logging
+
+3. System Functions
+   - Validation helpers
+   - Response formatting
+   - Error handling
+   - Security checks
+   - Cache management
+
 ## Current State
 
 ### Database-Frontend Integration Status
 
 #### Core Functionality Alignment
-- ✅ **Income Management**
+- ✅ Income Management
   - Database-API-Frontend alignment confirmed
   - CRUD operations fully implemented
   - Multi-currency support working
   - Category management integrated
 
-- ✅ **Expense Management**
-  - Complete status tracking (pending/paid/overdue)
+- ✅ Expense Management
+  - Complete status tracking
   - Payment date management working
   - Category system properly integrated
   - Transaction history maintained
 
-- ✅ **Bill Management**
+- ✅ Bill Management
   - Reminder system fully functional
-  - Payment tracking aligned across layers
+  - Payment tracking aligned
   - Recurring bill handling implemented
   - Due date calculations working
 
-- ✅ **Savings Goals**
+- ✅ Savings Goals
   - Progress tracking working
   - Target management aligned
   - Quick update functionality implemented
@@ -39,64 +92,19 @@
 - ✅ Indexes properly utilized
 - ✅ Transaction management working
 
-#### API Implementation
-- ✅ RESTful endpoints consistent
-- ✅ Error handling standardized
-- ✅ Input validation aligned
-- ✅ Response formats standardized
-- ✅ Security measures implemented
-
-#### Frontend Integration
-- ✅ Form validations matching database
-- ✅ Real-time updates working
-- ✅ Data visualization integrated
-- ✅ Error handling consistent
-
-### Recent Implementations
-
-1. Security Layer
-   ```php
-   - CSRF protection across forms
-   - Input validation aligned with DB constraints
-   - Session management secured
-   - Activity logging implemented
-   ```
-
-2. Data Consistency
-   ```sql
-   - Database constraints enforced
-   - Validation rules standardized
-   - Error handling unified
-   - Transaction safety ensured
-   ```
-
-3. Frontend Features
-   ```javascript
-   - Chart visualizations implemented
-   - Real-time updates working
-   - Form validations aligned
-   - Error handling standardized
-   ```
-
 ### Active Decisions
 
-1. Data Integration
-   - ✅ Database-API alignment maintained
-   - ✅ API-Frontend communication standardized
-   - ✅ Security measures consistent
-   - ✅ Error handling unified
+1. Configuration Management
+   - ✅ Unified configuration file
+   - ✅ Standardized constants
+   - ✅ Centralized settings
+   - ✅ Consistent file structure
 
 2. Code Organization
-   - ✅ Frontend modules properly structured
-   - ✅ API endpoints well-organized
-   - ✅ Database schema optimized
-   - ✅ Security implementation consistent
-
-3. User Experience
-   - ✅ Form validations working
-   - ✅ Error messages clear
-   - ✅ Data visualization effective
-   - ✅ Navigation intuitive
+   - ✅ Clear file hierarchy
+   - ✅ Proper includes structure
+   - ✅ Consistent API patterns
+   - ✅ Organized configurations
 
 ### Current Challenges
 
@@ -106,17 +114,17 @@
    - Cache implementation possibilities
    - API response optimization
 
-2. Scalability
-   - Database growth management
-   - API request handling
-   - Frontend performance with large datasets
-   - Cache strategy implementation
+2. Documentation
+   - API documentation updates needed
+   - Configuration documentation required
+   - Function documentation updates
+   - Setup guide revisions
 
 ### Development Focus
 
 1. Code Quality
-   - Maintain code standards
-   - Continue documentation
+   - Maintain configuration standards
+   - Update documentation
    - Enhance test coverage
    - Regular code reviews
 
@@ -126,50 +134,32 @@
    - API response enhancement
    - Cache strategy development
 
-3. User Support
-   - Documentation updates
-   - Error message clarity
-   - Help system enhancement
-   - User guide development
-
 ## Next Steps
 
 ### Immediate Priority
 
-1. Performance Optimization
-   - [ ] Query optimization
-   - [ ] Frontend load time
-   - [ ] API response time
-   - [ ] Cache implementation
+1. Documentation
+   - [ ] Update API documentation
+   - [ ] Document configuration options
+   - [ ] Update setup guides
+   - [ ] Revise function documentation
 
-2. Documentation
-   - [ ] API documentation update
-   - [ ] Frontend guide enhancement
-   - [ ] Database schema documentation
-   - [ ] Security implementation docs
-
-3. Testing
-   - [ ] Unit test coverage
+2. Testing
+   - [ ] Configuration validation
+   - [ ] API endpoint testing
    - [ ] Integration testing
    - [ ] Performance testing
-   - [ ] Security testing
 
 ### Future Considerations
 
 1. Features
-   - Mobile application
    - API expansion
    - Advanced reporting
    - Data export options
+   - Integration capabilities
 
-2. Integration
-   - Third-party services
-   - Payment gateways
-   - Banking APIs
-   - Notification systems
-
-3. Security
-   - Two-factor authentication
-   - API key management
-   - Rate limiting enhancement
-   - Security audit implementation
+2. Performance
+   - Query optimization
+   - Cache implementation
+   - Response time improvement
+   - Load time reduction

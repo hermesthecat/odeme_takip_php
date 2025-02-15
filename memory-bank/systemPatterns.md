@@ -1,5 +1,36 @@
 # System Patterns: Personal Finance Management System
 
+## Configuration Pattern
+
+### Unified Configuration Structure
+
+```php
+// Central Configuration File (includes/config.php)
+├── Application Settings
+│   ├── App constants
+│   ├── Database settings
+│   └── Security parameters
+│
+├── Feature Settings
+│   ├── Currency support
+│   ├── Categories
+│   └── Notifications
+│
+└── Helper Functions
+    ├── Validation
+    ├── Formatting
+    └── Cache management
+```
+
+### Include Pattern
+
+```php
+// API Endpoints
+require_once '../includes/config.php';  // Central configuration
+require_once '../includes/db.php';      // Database connection
+require_once '../includes/functions.php'; // Helper functions
+```
+
 ## Architecture Overview
 
 ### System Architecture
@@ -8,9 +39,11 @@
 graph TD
     Client[Client Layer: Frontend JS]
     API[Application Layer: PHP APIs]
+    Config[Configuration Layer]
     DB[Data Layer: MySQL]
     
     Client --> |CRUD Operations| API
+    API --> |Settings| Config
     API --> |Data Persistence| DB
     DB --> |Query Results| API
     API --> |JSON Response| Client
@@ -22,10 +55,12 @@ graph TD
 graph TD
     F[Frontend JS Modules]
     A[API Endpoints]
+    C[Configuration]
     D[Database Tables]
     V[Database Views]
     
     F --> |API Calls| A
+    A --> |Settings| C
     A --> |SQL Queries| D
     A --> |Statistical Queries| V
     V --> |Aggregated Data| A
@@ -139,55 +174,50 @@ class ModuleManager {
 
 ## Implementation Patterns
 
-### 1. CRUD Operations
-
-```mermaid
-graph LR
-    F[Frontend Form] --> V[Validation]
-    V --> A[API Endpoint]
-    A --> D[Database]
-    D --> R[Response]
-    R --> U[UI Update]
-```
-
-### 2. Data Validation
-
-```javascript
-// Frontend Validation
-const validateForm = (data) => {
-    // Type checking
-    // Format validation
-    // Business rules
-};
-```
+### 1. Configuration Usage
 
 ```php
-// Backend Validation
-function validateInput($data) {
-    // Required fields
-    // Data types
-    // Business logic
+// Configuration Access Pattern
+define('CONFIG_CONSTANT', 'value');
+function getConfig($key, $default = null) {
+    return defined($key) ? constant($key) : $default;
 }
 ```
 
-### 3. Error Handling
+### 2. API Endpoint Pattern
 
-```javascript
-// Frontend Error Handling
-try {
-    await operation();
-} catch (error) {
-    handleError(error);
+```php
+// Standard API Structure
+header('Content-Type: application/json');
+require_once '../includes/config.php';
+require_once '../includes/db.php';
+require_once '../includes/functions.php';
+
+// Authentication check
+if (!isLoggedIn()) {
+    http_response_code(401);
+    die(json_encode(['error' => 'Unauthorized']));
+}
+
+// Request handling
+switch ($_SERVER['REQUEST_METHOD']) {
+    case 'GET':    // Read operations
+    case 'POST':   // Create operations
+    case 'PUT':    // Update operations
+    case 'DELETE': // Delete operations
 }
 ```
 
+### 3. Error Handling Pattern
+
 ```php
-// Backend Error Handling
-try {
-    // Operation
-} catch (Exception $e) {
-    logError($e);
-    return errorResponse($e);
+// Centralized Error Handling
+function handleError($error) {
+    logError($error);
+    return [
+        'success' => false,
+        'error' => getErrorMessage($error)
+    ];
 }
 ```
 
@@ -199,103 +229,24 @@ try {
 graph TD
     Login[Login Form]
     Auth[Auth API]
+    Config[Configuration]
     Session[Session Management]
     
     Login --> |Credentials| Auth
+    Auth --> |Settings| Config
     Auth --> |Validate| Session
     Session --> |Token| Login
 ```
 
-### 2. Data Protection
+### 2. Data Protection Pattern
 
 ```php
-// Security Measures
-- CSRF Protection
-- Input Sanitization
-- Prepared Statements
-- Transaction Safety
-```
-
-## Database Patterns
-
-### 1. Table Relationships
-
-```mermaid
-graph TD
-    Users --> Incomes
-    Users --> Expenses
-    Users --> Bills
-    Users --> Savings
-    
-    Bills --> Payments
-    Categories --> Transactions
-```
-
-### 2. Data Access
-
-```php
-// Data Access Pattern
-class DataAccess {
-    // CRUD Operations
-    // Transaction Management
+// Security Implementation
+class SecurityManager {
+    // CSRF Protection
+    // Input Sanitization
+    // Session Management
     // Error Handling
-    // Result Processing
-}
-```
-
-## Frontend Patterns
-
-### 1. Component Structure
-
-```javascript
-// Component Pattern
-class Component {
-    constructor() {
-        // Initialize
-    }
-    
-    render() {
-        // Display
-    }
-    
-    handleEvents() {
-        // Event Management
-    }
-}
-```
-
-### 2. State Management
-
-```javascript
-// State Management Pattern
-class StateManager {
-    // Data Storage
-    // Event Handling
-    // UI Updates
-}
-```
-
-## Integration Patterns
-
-### 1. API Communication
-
-```javascript
-// API Client Pattern
-class APIClient {
-    // Request Formatting
-    // Response Handling
-    // Error Management
-}
-```
-
-### 2. Data Synchronization
-
-```javascript
-// Sync Pattern
-class DataSync {
-    // Change Detection
-    // Update Propagation
-    // Conflict Resolution
 }
 ```
 
@@ -303,32 +254,32 @@ class DataSync {
 
 ### 1. Test Organization
 
-```javascript
+```php
 // Test Structure
-describe('Module', () => {
-    // Unit Tests
+class EndpointTest extends TestCase {
+    // Configuration Tests
+    // API Tests
     // Integration Tests
-    // UI Tests
-});
+}
 ```
 
-### 2. Test Data
+### 2. Test Data Pattern
 
 ```php
-// Test Data Pattern
+// Test Data Management
 class TestData {
-    // Data Generation
-    // State Setup
-    // Cleanup
+    // Sample Data Generation
+    // State Management
+    // Cleanup Operations
 }
 ```
 
 ## Maintenance Patterns
 
-### 1. Logging
+### 1. Logging Pattern
 
 ```php
-// Logging Pattern
+// Activity Logging
 function logActivity($type, $data) {
     // Event Recording
     // Error Tracking
@@ -336,10 +287,10 @@ function logActivity($type, $data) {
 }
 ```
 
-### 2. Monitoring
+### 2. Monitoring Pattern
 
 ```php
-// Monitoring Pattern
+// System Monitoring
 class SystemMonitor {
     // Performance Tracking
     // Error Detection

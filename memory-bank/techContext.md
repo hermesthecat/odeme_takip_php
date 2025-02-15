@@ -5,15 +5,15 @@
 ### Backend Technologies
 
 - **PHP 7.4+**
-  - API implementation complete
+  - Unified configuration system
+  - Centralized includes structure
   - PDO database integration
-  - Transaction management
-  - Input validation
-  - Error handling
-  - Security measures
+  - Security implementation
+  - API endpoints
+  - Helper functions
 
 - **MySQL 5.7+**
-  - Complete schema implemented
+  - Complete schema implementation
   - Views for reporting
   - Triggers for automation
   - Foreign key relationships
@@ -51,6 +51,52 @@
   - Date handling utilities
   - Currency formatting
 
+## File Structure
+
+### Core Files
+
+```php
+/includes/
+  ├── config.php      // Central configuration
+  ├── db.php         // Database connection
+  ├── functions.php  // Helper functions
+  ├── security.php   // Security functions
+  └── mail.php       // Email functionality
+
+/api/
+  ├── auth.php       // Authentication endpoints
+  ├── bills.php     // Bill management
+  ├── expense.php   // Expense handling
+  ├── income.php    // Income management
+  └── reports.php   // Report generation
+```
+
+### Configuration System
+
+```php
+// Unified Configuration (includes/config.php)
+// Application Settings
+define('APP_NAME', 'Kişisel Finans Yönetimi');
+define('APP_VERSION', '1.0.0');
+define('APP_URL', 'https://butce.local');
+
+// Database Settings
+define('DB_HOST', 'localhost');
+define('DB_NAME', 'odeme_takip');
+define('DB_USER', 'user');
+define('DB_PASS', 'password');
+
+// Security Settings
+define('ALLOWED_ORIGIN', 'https://butce.local');
+define('API_RATE_LIMIT', 100);
+define('API_CACHE_TIME', 300);
+
+// Feature Settings
+define('SUPPORTED_CURRENCIES', [...]);
+define('REPORT_TYPES', [...]);
+define('DATE_RANGES', [...]);
+```
+
 ## Development Setup
 
 ### Server Requirements
@@ -69,32 +115,22 @@ mbstring
 xml
 ```
 
-### Database Configuration
-
-```php
-// Database Settings
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'odeme_takip');
-define('DB_USER', 'user');
-define('DB_PASS', 'password');
-define('DB_CHARSET', 'utf8mb4');
-
-// PDO Configuration
-PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
-PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
-```
-
 ### API Implementation
 
 ```php
-// API Structure
-/api/
-  ├── auth.php      // Authentication endpoints
-  ├── bills.php     // Bill management
-  ├── expense.php   // Expense tracking
-  ├── income.php    // Income management
-  ├── reports.php   // Reporting endpoints
-  └── savings.php   // Savings goals
+// Standard API Structure
+header('Content-Type: application/json');
+require_once '../includes/config.php';
+require_once '../includes/db.php';
+require_once '../includes/functions.php';
+
+// Request handling
+switch ($_SERVER['REQUEST_METHOD']) {
+    case 'GET':    // Read
+    case 'POST':   // Create
+    case 'PUT':    // Update
+    case 'DELETE': // Delete
+}
 ```
 
 ## Technical Constraints
@@ -113,11 +149,11 @@ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
    - Error handling
    - Activity logging
 
-3. Validation Rules
-   - Frontend validation
-   - Backend validation
-   - Database constraints
-   - Business rules
+3. Configuration
+   - Centralized settings
+   - Environment separation
+   - Secure credentials
+   - Feature flags
 
 ### Performance Requirements
 
@@ -133,56 +169,46 @@ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
    - File uploads: 5MB
    - Cache size: 100MB
 
-## Dependencies
+## Integration Features
 
-### Core Dependencies
+### API Structure
 
-```json
-{
-  "backend": {
-    "php": ">=7.4",
-    "mysql": ">=5.7",
-    "apache": ">=2.4"
-  },
-  "frontend": {
-    "chart.js": "^3.0",
-    "sweetalert2": "^11.0",
-    "fontawesome": "^5.0"
-  }
-}
+```php
+/api/
+  ├── Authentication
+  │   ├── Login
+  │   ├── Register
+  │   └── Password Reset
+  │
+  ├── Financial Management
+  │   ├── Income
+  │   ├── Expenses
+  │   └── Bills
+  │
+  ├── Analysis
+  │   ├── Reports
+  │   └── Statistics
+  │
+  └── System
+      ├── Configuration
+      └── User Settings
 ```
 
-### Implementation Details
+### Data Flow
 
-1. Database Integration
-   ```php
-   // PDO Implementation
-   $pdo = new PDO(
-       "mysql:host=".DB_HOST.";dbname=".DB_NAME.";charset=".DB_CHARSET,
-       DB_USER,
-       DB_PASS,
-       [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
-   );
+1. Request Flow
+   ```
+   Client -> API -> Config -> Database -> Response
    ```
 
-2. API Structure
-   ```php
-   // Standard Response Format
-   {
-     "success": boolean,
-     "data": mixed,
-     "error": string|null
-   }
+2. Data Processing
+   ```
+   Input -> Validation -> Processing -> Response
    ```
 
-3. Frontend Integration
-   ```javascript
-   // API Client
-   async function fetchAPI(endpoint, options = {}) {
-     // Request formatting
-     // Response handling
-     // Error management
-   }
+3. Error Handling
+   ```
+   Try -> Catch -> Log -> Response
    ```
 
 ## Development Tools
@@ -201,7 +227,7 @@ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 - MySQL optimizer
 - Security scanning
 
-### Testing Tools
+### Testing
 
 - PHPUnit for PHP
 - Jest for JavaScript
@@ -224,7 +250,7 @@ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
    - Optimized settings
    - Real data
 
-### Deployment Process
+### Deployment Steps
 
 1. Version Control
    - Feature branches
@@ -232,11 +258,11 @@ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
    - Testing phase
    - Version tagging
 
-2. Deployment Steps
+2. Server Update
    - Backup creation
    - Code deployment
-   - Database updates
-   - Cache clearing
+   - Config update
+   - Cache clear
 
 ## Monitoring
 
@@ -247,35 +273,12 @@ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 - API response times
 - Error rates
 
-### Performance Monitoring
+### Performance
 
 - Query execution time
 - API response time
 - Frontend load time
 - Cache hit rates
-
-## Backup Strategy
-
-### Data Backups
-
-- Daily database backup
-- Transaction logs
-- Configuration files
-- User uploads
-
-### Recovery Plan
-
-1. Database Recovery
-   - Backup restoration
-   - Transaction replay
-   - Integrity check
-   - Service restart
-
-2. System Recovery
-   - Code rollback
-   - Config restore
-   - Service restart
-   - Health check
 
 ## Documentation
 
@@ -286,12 +289,12 @@ PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC
 - Authentication details
 - Error codes
 
-### Database Schema
+### Configuration Guide
 
-- Table relationships
-- Field descriptions
-- Index definitions
-- Constraint details
+- System requirements
+- Installation steps
+- Configuration options
+- Environment setup
 
 ### Code Standards
 
