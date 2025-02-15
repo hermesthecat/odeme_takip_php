@@ -91,6 +91,54 @@
 - Responsive design patterns
 - Theme switching capability
 
+### 1. Data Management
+
+- Dynamic Configuration
+  - Database-driven settings
+  - User-specific customization
+  - Default value fallbacks
+  - Validation constants
+
+- Category Management
+  - User-specific categories
+  - Dynamic color schemes
+  - Hierarchical structure
+  - Flexible naming
+
+- Interval Handling
+  - Predefined validations
+  - Custom intervals
+  - Default preferences
+  - Time zone awareness
+
+### 2. Configuration Management
+
+```php
+// System Constants
+define('VALID_INTERVALS', [...]);
+define('DEFAULT_VALUES', [...]);
+define('SYSTEM_COLORS', [...]);
+
+// Database Storage
+table: user_preferences
+table: category_settings
+table: system_defaults
+```
+
+### 3. Validation Patterns
+
+```php
+// Input Validation
+validateInterval($interval)
+validateCategory($category)
+validateDefaults($settings)
+
+// Data Consistency
+checkUserPermissions()
+verifyDataIntegrity()
+ensureUniqueness()
+```
+
 ## Key Technical Decisions
 
 ### Database Schema
@@ -186,6 +234,24 @@ Input Validation → Currency Conversion → Database Storage → Activity Log
 
 ```
 Data Aggregation → Analysis → Visualization → Export
+```
+
+### 1. Configuration Flow
+
+```
+System Defaults → User Preferences → Runtime Values
+```
+
+### 2. Category Management
+
+```
+Base Categories → User Customization → Applied Settings
+```
+
+### 3. Data Validation
+
+```
+System Rules → User Input → Validated Data → Storage
 ```
 
 ## Architectural Patterns

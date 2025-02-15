@@ -82,4 +82,27 @@ define('BILL_REPEAT_INTERVALS', json_encode([
     'monthly' => 'Aylık',
     'quarterly' => 'Üç Aylık',
     'yearly' => 'Yıllık'
+]));
+
+// Varsayılan sistem ayarları
+define('DEFAULT_BILL_NOTIFICATION_DAYS', 3);
+define('DEFAULT_BILL_REPEAT_INTERVAL', 'monthly');
+define('DEFAULT_BILL_STATUS', 'active');
+
+// Sistem sabitleri
+define('VALID_BILL_INTERVALS', json_encode([
+    'daily',
+    'weekly',
+    'monthly',
+    'quarterly',
+    'yearly'
+]));
+
+// Varsayılan kategori renkleri
+define('DEFAULT_CATEGORY_COLORS', json_encode([
+    'utilities' => '#F44336',
+    'rent' => '#2196F3',
+    'insurance' => '#4CAF50',
+    'subscription' => '#FFC107',
+    'other' => '#9E9E9E'
 ])); 

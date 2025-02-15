@@ -166,8 +166,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 throw new Exception('Geçersiz para birimi');
             }
 
-            $validIntervals = json_decode(BILL_REPEAT_INTERVALS, true);
-            if (!array_key_exists($data['repeat_interval'] ?? 'monthly', $validIntervals)) {
+            // Tekrarlama aralığı validasyonu
+            $validIntervals = json_decode(VALID_BILL_INTERVALS, true);
+            if (!in_array($data['repeat_interval'] ?? DEFAULT_BILL_REPEAT_INTERVAL, $validIntervals)) {
                 throw new Exception('Geçersiz tekrar aralığı');
             }
 
@@ -176,48 +177,41 @@ switch ($_SERVER['REQUEST_METHOD']) {
             try {
                 $category_id = null;
                 
-                // Fatura kategorisi kontrolü/oluşturma
+                // Kategori işleme
                 if (!empty($data['category'])) {
                     try {
-                        // Önce kategoriyi eklemeyi dene
+                        // Kategori oluşturma veya güncelleme
                         $stmt = $pdo->prepare("
-                            INSERT INTO bill_categories (user_id, name, icon, color)
-                            VALUES (?, ?, ?, ?)
+                            INSERT INTO bill_categories (
+                                user_id, name, icon, color
+                            ) VALUES (?, ?, ?, ?)
                             ON DUPLICATE KEY UPDATE
                             icon = VALUES(icon),
-                            color = VALUES(color)
+                            color = COALESCE(VALUES(color), color)
                         ");
+                        
+                        $defaultColors = json_decode(DEFAULT_CATEGORY_COLORS, true);
+                        $color = $data['category_color'] ?? 
+                                $defaultColors[$data['category']] ?? 
+                                '#' . substr(md5($data['category']), 0, 6);
                         
                         $stmt->execute([
                             $user_id,
                             $data['category'],
                             $data['category_icon'] ?? null,
-                            $data['category_color'] ?? '#' . substr(md5($data['category']), 0, 6)
+                            $color
                         ]);
                         
-                        $category_id = $pdo->lastInsertId();
-                        
-                        // Eğer yeni kayıt oluşmadıysa mevcut kategoriyi bul
-                        if (!$category_id) {
-                            $stmt = $pdo->prepare("
-                                SELECT id FROM bill_categories 
-                                WHERE user_id = ? AND name = ?
-                            ");
-                            $stmt->execute([$user_id, $data['category']]);
-                            $category_id = $stmt->fetchColumn();
-                        }
+                        $category_id = $pdo->lastInsertId() ?: (
+                            $pdo->query("SELECT id FROM bill_categories WHERE user_id = {$user_id} AND name = " . 
+                            $pdo->quote($data['category']))->fetchColumn()
+                        );
                     } catch (PDOException $e) {
-                        // Duplicate key hatası durumunda mevcut kategoriyi kullan
-                        if ($e->getCode() == '23000') {
-                            $stmt = $pdo->prepare("
-                                SELECT id FROM bill_categories 
-                                WHERE user_id = ? AND name = ?
-                            ");
-                            $stmt->execute([$user_id, $data['category']]);
-                            $category_id = $stmt->fetchColumn();
-                        } else {
-                            throw $e;
-                        }
+                        if ($e->getCode() != '23000') throw $e;
+                        // Duplicate key durumunda mevcut kategoriyi kullan
+                        $stmt = $pdo->prepare("SELECT id FROM bill_categories WHERE user_id = ? AND name = ?");
+                        $stmt->execute([$user_id, $data['category']]);
+                        $category_id = $stmt->fetchColumn();
                     }
                 }
 
@@ -235,12 +229,12 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     $data['title'],
                     $data['amount'],
                     $data['due_date'],
-                    $data['repeat_interval'] ?? 'monthly',
+                    $data['repeat_interval'] ?? DEFAULT_BILL_REPEAT_INTERVAL,
                     $data['description'] ?? null,
-                    $category_id,
-                    $data['currency'] ?? 'TRY',
-                    'active',
-                    $data['notification_days'] ?? 3
+                    $category_id ?? null,
+                    $data['currency'] ?? DEFAULT_CURRENCY,
+                    $data['status'] ?? DEFAULT_BILL_STATUS,
+                    $data['notification_days'] ?? DEFAULT_BILL_NOTIFICATION_DAYS
                 ]);
 
                 $bill_id = $pdo->lastInsertId();
@@ -307,8 +301,9 @@ switch ($_SERVER['REQUEST_METHOD']) {
                 throw new Exception('Geçersiz para birimi');
             }
 
-            $validIntervals = json_decode(BILL_REPEAT_INTERVALS, true);
-            if (!array_key_exists($data['repeat_interval'] ?? 'monthly', $validIntervals)) {
+            // Tekrarlama aralığı validasyonu
+            $validIntervals = json_decode(VALID_BILL_INTERVALS, true);
+            if (!in_array($data['repeat_interval'] ?? DEFAULT_BILL_REPEAT_INTERVAL, $validIntervals)) {
                 throw new Exception('Geçersiz tekrar aralığı');
             }
 
@@ -355,7 +350,7 @@ switch ($_SERVER['REQUEST_METHOD']) {
                     $data['title'],
                     $data['amount'],
                     $data['due_date'],
-                    $data['repeat_interval'] ?? 'monthly',
+                    $data['repeat_interval'] ?? DEFAULT_BILL_REPEAT_INTERVAL,
                     $data['description'] ?? null,
                     $category_id ?? null,
                     $data['currency'] ?? 'TRY',
