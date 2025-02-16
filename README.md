@@ -1,94 +1,135 @@
-# Kişisel Finans Yönetim Sistemi / Personal Finance Management System
+[🇹🇷 Türkçe](#bütçe-kontrol-sistemi) | [🇬🇧 English](#budget-control-system)
 
-[🇹🇷 Türkçe](#türkçe) | [🇬🇧 English](#english)
+# Bütçe Kontrol Sistemi
 
----
+Bu proje, kişisel bütçe kontrolü ve takibi için geliştirilmiş bir web uygulamasıdır. Progressive Web App (PWA) olarak tasarlanmış olup, çevrimdışı kullanım desteği sunmaktadır.
 
-# Türkçe
+## Özellikler
 
-## Proje Hakkında
-Kişisel Finans Yönetim Sistemi, bireylerin ve ailelerin finansal durumlarını etkin bir şekilde takip etmelerini sağlayan kapsamlı bir web uygulamasıdır. Gelir-gider takibi, fatura yönetimi, birikim hedefleri ve detaylı raporlama özellikleri ile kullanıcıların finansal hayatlarını düzenlemelerine yardımcı olur.
-
-### Özellikler
-- 📊 Gelir ve gider takibi
-- 📅 Fatura hatırlatıcıları
-- 💰 Birikim hedefleri
-- 💹 Çoklu döviz desteği
-- 📈 Detaylı raporlar ve grafikler
-- 🔄 Tekrarlanan işlem yönetimi
-- 🌙 Koyu/açık tema desteği
+- 💰 Gelir ve gider takibi
+- 💳 Ödeme planı oluşturma
+- 📊 Detaylı raporlama
+- 💾 Çevrimdışı çalışabilme
 - 📱 Mobil uyumlu tasarım
+- 🎯 Birikim hedefleri
+- 🔄 Otomatik yedekleme
+- 🌙 Karanlık mod
 
-### Teknik Özellikler
-- PHP 7.4+ backend
-- MySQL veritabanı
-- RESTful API yapısı
-- Responsive tasarım
-- Modern JavaScript ve Chart.js
-- Güvenli oturum yönetimi
-- CSRF koruması
-- Veri şifreleme
+## Teknolojiler
 
-### Kurulum
-1. Dosyaları sunucunuza yükleyin
-2. `database.sql` dosyasını veritabanınıza import edin
-3. `includes/db.php` dosyasında veritabanı bağlantı bilgilerini düzenleyin
-4. Sistem kullanıma hazır!
+- HTML5
+- CSS3
+- JavaScript (ES6+)
+- Service Workers
+- IndexedDB
+- PWA
 
-### Gereksinimler
-- PHP 7.4 veya üzeri
-- MySQL 5.7 veya üzeri
-- mod_rewrite etkin Apache/Nginx
-- PHP Extensions:
-  - mysqli
-  - json
-  - curl
-  - mbstring
-  - xml
+## Kurulum
+
+1. Projeyi klonlayın
+
+```bash
+git clone https://github.com/hermesthecat/odeme_takip.git
+```
+
+2. Proje dizinine gidin
+
+```bash
+cd odeme_takip
+```
+
+3. Bir web sunucusu ile çalıştırın
+
+```bash
+# Python ile basit bir web sunucusu başlatma
+python -m http.server 8000
+```
+
+## Ekran Görüntüleri
+
+![Ana Sayfa](screens/Snipaste_2025-02-13_16-04-06.png)
+_Ana Sayfa_
+
+![Takvim](screens/Snipaste_2025-02-13_16-04-23.png)
+_Takvim_
+
+![Mini Raporlar](screens/Snipaste_2025-02-13_16-04-37.png)
+_Mini Raporlar_
+
+![Gelir Ekleme](screens/Snipaste_2025-02-13_16-04-45.png)
+_Gelir Ekleme_
+
+![Karanlık Mod](screens/Snipaste_2025-02-13_16-04-52.png)
+_Karanlık Mod_
 
 ---
 
-# English
+# Budget Control System
 
-## About Project
-Personal Finance Management System is a comprehensive web application that enables individuals and families to effectively track their financial status. It helps users organize their financial lives with features including income-expense tracking, bill management, savings goals, and detailed reporting.
+This is a web application developed for personal budget control and tracking. It is designed as a Progressive Web App (PWA) and provides offline usage support.
 
-### Features
-- 📊 Income and expense tracking
-- 📅 Bill reminders
-- 💰 Savings goals
-- 💹 Multi-currency support
-- 📈 Detailed reports and charts
-- 🔄 Recurring transaction management
-- 🌙 Dark/light theme support
-- 📱 Mobile-responsive design
+## Features
 
-### Technical Features
-- PHP 7.4+ backend
-- MySQL database
-- RESTful API structure
-- Responsive design
-- Modern JavaScript & Chart.js
-- Secure session management
-- CSRF protection
-- Data encryption
+- 💰 Income and expense tracking
+- 💳 Payment planning
+- 📊 Detailed reporting
+- 💾 Offline functionality
+- 📱 Mobile responsive design
+- 🎯 Savings goals
+- 🔄 Automatic backup
+- 🌙 Dark mode
 
-### Installation
-1. Upload files to your server
-2. Import `database.sql` to your database
-3. Configure database connection in `includes/db.php`
-4. System is ready to use!
+## Technologies
 
-### Requirements
-- PHP 7.4 or higher
-- MySQL 5.7 or higher
-- Apache/Nginx with mod_rewrite enabled
-- PHP Extensions:
-  - mysqli
-  - json
-  - curl
-  - mbstring
-  - xml
+- HTML5
+- CSS3
+- JavaScript (ES6+)
+- Service Workers
+- IndexedDB
+- PWA
+
+## Installation
+
+1. Clone the project
+
+```bash
+git clone https://github.com/hermesthecat/odeme_takip.git
+```
+
+2. Go to project directory
+
+```bash
+cd odeme_takip
+```
+
+3. Run with a web server
+
+```bash
+# Start a simple web server with Python
+python -m http.server 8000
+```
+
+## Screenshots
+
+![Home Page](screens/Snipaste_2025-02-13_16-04-06.png)
+_Home Page_
+
+![Calendar](screens/Snipaste_2025-02-13_16-04-23.png)
+_Calendar_
+
+![Mini Reports](screens/Snipaste_2025-02-13_16-04-37.png)
+_Mini Reports_
+
+![Add Income](screens/Snipaste_2025-02-13_16-04-45.png)
+_Add Income_
+
+![Dark Mode](screens/Snipaste_2025-02-13_16-04-52.png)
+_Dark Mode_
 
 ## License
-MIT License - Dilediğiniz gibi kullanabilirsiniz / Use as you wish
+
+MIT
+
+## Author
+
+A. Kerem Gök
