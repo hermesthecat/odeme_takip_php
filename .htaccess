@@ -11,6 +11,19 @@ Options +ExecCGI +FollowSymLinks
 
 RewriteBase /
 
+# Handle page requests
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^login/?$ pages/login.php [QSA,L]
+RewriteRule ^register/?$ pages/register.php [QSA,L]
+RewriteRule ^profile/?$ pages/profile.php [QSA,L]
+RewriteRule ^settings/?$ pages/settings.php [QSA,L]
+RewriteRule ^reports/?$ pages/reports.php [QSA,L]
+RewriteRule ^savings/?$ pages/savings.php [QSA,L]
+RewriteRule ^terms/?$ pages/terms.php [QSA,L]
+RewriteRule ^privacy/?$ pages/privacy.php [QSA,L]
+RewriteRule ^reset-password/?$ pages/reset-password.php [QSA,L]
+
 # Prevent direct access to configuration files
 
 <FilesMatch "^\.">
