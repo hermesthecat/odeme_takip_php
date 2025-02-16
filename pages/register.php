@@ -1,6 +1,6 @@
 <?php
 // Check if already logged in
-if(isset($_SESSION['user_id'])) {
+if (isset($_SESSION['user_id'])) {
     header('Location: /dashboard');
     exit;
 }
@@ -14,12 +14,12 @@ if(isset($_SESSION['user_id'])) {
             <div class="card-body">
                 <form id="registerForm" method="POST" action="/api/auth?action=register">
                     <input type="hidden" name="csrf_token" value="<?php echo csrf_token(); ?>">
-                    
+
                     <div class="mb-3">
                         <label for="username" class="form-label">Kullanıcı Adı</label>
-                        <input type="text" class="form-control" id="username" name="username" required 
-                               minlength="3" maxlength="50" pattern="[a-zA-Z0-9_-]+"
-                               title="Sadece harf, rakam, tire ve alt çizgi kullanabilirsiniz">
+                        <input type="text" class="form-control" id="username" name="username" required
+                            minlength="3" maxlength="50" pattern="[a-zA-Z0-9_-]+"
+                            title="Sadece harf, rakam, tire ve alt çizgi kullanabilirsiniz">
                         <small class="form-text text-muted">
                             En az 3, en fazla 50 karakter. Sadece harf, rakam, tire ve alt çizgi kullanabilirsiniz.
                         </small>
@@ -28,9 +28,9 @@ if(isset($_SESSION['user_id'])) {
                     <div class="mb-3">
                         <label for="password" class="form-label">Şifre</label>
                         <input type="password" class="form-control" id="password" name="password" required
-                               minlength="6" maxlength="50"
-                               pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$"
-                               title="En az 6 karakter, en az bir harf ve bir rakam içermelidir">
+                            minlength="6" maxlength="50"
+                            pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$"
+                            title="En az 6 karakter, en az bir harf ve bir rakam içermelidir">
                         <small class="form-text text-muted">
                             En az 6 karakter, en az bir harf ve bir rakam içermelidir.
                         </small>
@@ -55,51 +55,74 @@ if(isset($_SESSION['user_id'])) {
 </div>
 
 <script>
-document.getElementById('registerForm').addEventListener('submit', async function(e) {
-    e.preventDefault();
+    document.getElementById('registerForm').addEventListener('submit', async function(e) {
+        e.preventDefault();
 
-    // Validate password match
-    const password = document.getElementById('password').value;
-    const confirmPassword = document.getElementById('confirm_password').value;
+        // Validate password match
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirm_password').value;
 
-    if(password !== confirmPassword) {
-        alert('Şifreler eşleşmiyor');
-        return;
-    }
-
-    try {
-        const response = await fetch(this.action, {
-            method: 'POST',
-            body: new FormData(this),
-            credentials: 'include'
-        });
-
-        const data = await response.json();
-
-        if(data.success) {
-            window.location.href = '/dashboard';
-        } else {
-            alert(data.errors ? data.errors.join('\n') : 'Kayıt başarısız');
+        if (password !== confirmPassword) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Hata',
+                text: 'Şifreler eşleşmiyor',
+                confirmButtonText: 'Tamam'
+            });
+            return;
         }
-    } catch(error) {
-        console.error('Registration error:', error);
-        alert('Kayıt olurken bir hata oluştu');
-    }
-});
 
-// Real-time password validation
-document.getElementById('password').addEventListener('input', function() {
-    const password = this.value;
-    const isValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/.test(password);
-    
-    this.setCustomValidity(isValid ? '' : 'Şifre en az 6 karakter, en az bir harf ve bir rakam içermelidir');
-});
+        try {
+            const formData = new FormData(this);
+            const response = await fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                credentials: 'include'
+            });
 
-// Real-time password match validation
-document.getElementById('confirm_password').addEventListener('input', function() {
-    const password = document.getElementById('password').value;
-    const confirmPassword = this.value;
-    
-    this.setCustomValidity(password === confirmPassword ? '' : 'Şifreler eşleşmiyor');
-});
+            const data = await response.json();
+
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Başarılı',
+                    text: 'Kayıt işlemi başarıyla tamamlandı',
+                    confirmButtonText: 'Tamam'
+                }).then(() => {
+                    window.location.href = '/dashboard';
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Kayıt Başarısız',
+                    text: data.errors ? data.errors.join('\n') : 'Kayıt işlemi başarısız oldu',
+                    confirmButtonText: 'Tamam'
+                });
+            }
+        } catch (error) {
+            console.error('Registration error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Hata',
+                text: 'Kayıt olurken bir hata oluştu',
+                confirmButtonText: 'Tamam'
+            });
+        }
+    });
+
+    // Real-time password validation
+    document.getElementById('password').addEventListener('input', function() {
+        const password = this.value;
+        const isValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{6,}$/.test(password);
+
+        this.setCustomValidity(isValid ? '' : 'Şifre en az 6 karakter, en az bir harf ve bir rakam içermelidir');
+    });
+
+    // Real-time password match validation
+    document.getElementById('confirm_password').addEventListener('input', function() {
+        const password = document.getElementById('password').value;
+        const confirmPassword = this.value;
+
+        this.setCustomValidity(password === confirmPassword ? '' : 'Şifreler eşleşmiyor');
+    });
 </script>

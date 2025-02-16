@@ -1,4 +1,5 @@
 <?php
+session_start();
 require_once __DIR__ . '/../../app/config/config.php';
 require_once __DIR__ . '/../../app/controllers/AuthController.php';
 
@@ -15,10 +16,51 @@ $auth = new AuthController();
 $method = $_SERVER['REQUEST_METHOD'];
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
+// Verify CSRF token for POST requests
+if ($method === 'POST' && $action !== 'login') {
+    $token = $_POST['csrf_token'] ?? '';
+    if (!verify_csrf_token($token)) {
+        $response = [
+            'success' => false,
+            'errors' => ['Invalid CSRF token']
+        ];
+        http_response_code(403);
+        echo json_encode($response);
+        exit;
+    }
+}
+
 switch ($method) {
     case 'POST':
         switch ($action) {
             case 'register':
+                // Validate required fields
+                $required = ['username', 'password', 'confirm_password'];
+                $errors = [];
+
+                foreach ($required as $field) {
+                    if (!isset($_POST[$field]) || empty($_POST[$field])) {
+                        $errors[] = ucfirst($field) . ' is required';
+                    }
+                }
+
+                if (!empty($errors)) {
+                    $response = [
+                        'success' => false,
+                        'errors' => $errors
+                    ];
+                    break;
+                }
+
+                // Validate password match
+                if ($_POST['password'] !== $_POST['confirm_password']) {
+                    $response = [
+                        'success' => false,
+                        'errors' => ['Passwords do not match']
+                    ];
+                    break;
+                }
+
                 $response = $auth->register();
                 break;
 
