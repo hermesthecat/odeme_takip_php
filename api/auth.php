@@ -57,7 +57,7 @@ try {
 
             $stmt = $pdo->prepare('
                 SELECT id, username, password, first_name, last_name, status, 
-                       failed_login_attempts, last_failed_login 
+                       failed_login_attempts, lockout_until
                 FROM users 
                 WHERE username = ? AND status != "banned"
             ');
@@ -65,14 +65,14 @@ try {
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
             // Brute force koruması
-            if ($user && $user['failed_login_attempts'] >= MAX_LOGIN_ATTEMPTS) {
-                $cooldown = strtotime($user['last_failed_login']) + LOGIN_COOLDOWN_PERIOD;
-                if (time() < $cooldown) {
-                    throw new Exception('Hesabınız kilitlendi. Lütfen daha sonra tekrar deneyin.');
-                }
-                // Cooldown süresi geçtiyse sayacı sıfırla
-                $stmt = $pdo->prepare('UPDATE users SET failed_login_attempts = 0 WHERE id = ?');
-                $stmt->execute([$user['id']]);
+            if ($user && $user['lockout_until'] && new DateTime($user['lockout_until']) > new DateTime()) {
+                $lockout_time = new DateTime($user['lockout_until']);
+                $now = new DateTime();
+                $remaining = $now->diff($lockout_time);
+                throw new Exception(sprintf(
+                    'Hesabınız kilitlendi. Lütfen %d dakika sonra tekrar deneyin.',
+                    ceil($remaining->i)
+                ));
             }
 
             if (!$user || !password_verify($password, $user['password'])) {
@@ -81,7 +81,7 @@ try {
                     $stmt = $pdo->prepare('
                         UPDATE users 
                         SET failed_login_attempts = failed_login_attempts + 1,
-                            last_failed_login = NOW()
+                            lockout_until = DATE_ADD(NOW(), INTERVAL 15 MINUTE)
                         WHERE id = ?
                     ');
                     $stmt->execute([$user['id']]);
@@ -121,7 +121,7 @@ try {
                 UPDATE users 
                 SET last_login = NOW(),
                     failed_login_attempts = 0,
-                    last_failed_login = NULL
+                    lockout_until = NULL
                 WHERE id = ?
             ');
             $stmt->execute([$user['id']]);
@@ -202,7 +202,7 @@ try {
             }
 
             // Email kontrolü
-            $stmt = $pdo->prepare('SELECT id, username, first_name, email FROM users WHERE email = ? AND status = "active"');
+            $stmt = $pdo->prepare('SELECT id, username, first_name, email FROM users WHERE email = ? ');
             $stmt->execute([$email]);
             $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
