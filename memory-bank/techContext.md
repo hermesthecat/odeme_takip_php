@@ -13,7 +13,6 @@
   - Modern JavaScript features
   - Async/Await support
   - Classes and Modules
-  - Service Workers (in progress)
 
 ### Frameworks & Libraries
 - **Bootstrap 5.3.0**: UI framework
@@ -35,7 +34,7 @@
   - Provider: exchangerate.host
   - Real-time rates
   - Multiple currency support
-  - Offline fallback (in progress)
+  - Local caching
 
 ## Dependencies
 
@@ -75,40 +74,39 @@
 - Text editor/IDE with JavaScript support
 - Basic HTTP server for development
 - Git for version control
-- Chrome DevTools for PWA testing
+- Chrome DevTools for debugging
 
 ### Development Server
 - Python SimpleHTTPServer
 - Node.js http-server
-- Or any basic web server with HTTPS support
+- Or any basic web server
 
 ### Browser Support
-- Chrome 120+ (recommended for PWA features)
-- Firefox 122+
-- Safari 17+
-- Edge 120+
-- Mobile browsers (iOS 17+/Android 14+)
+- Chrome (latest)
+- Firefox (latest)
+- Safari (latest)
+- Edge (latest)
+- Mobile browsers (iOS/Android latest)
 
 ## Technical Constraints
 
 ### Storage Limitations
 - LocalStorage: ~5MB limit
-- IndexedDB: Browser-dependent limits
-- Offline storage management required
-- PWA cache size considerations
+- Browser cache management
+- Data backup considerations
 
 ### API Limitations
 - Exchange Rate API:
   - Rate limits apply
   - Requires fallback handling
   - Cache management needed
-  - Offline support required
+  - Error handling required
 
 ### Browser Compatibility
 - Must support ES6+ features
-- PWA feature support required
-- Service Worker compatibility needed
 - Modern browser APIs required
+- Mobile browser support
+- Touch event handling
 
 ### Performance Requirements
 - Initial load under 2.5 seconds
@@ -125,54 +123,18 @@
 - Secure export/import
 - Data validation
 - XSS prevention
-- PWA security best practices
 
 ### API Security
 - HTTPS required
 - API key protection
 - Rate limiting
 - Error handling
-- Secure offline storage
 
 ### User Data
 - Local storage only
 - No server transmission
 - Privacy focused
 - Data backup support
-- Offline data integrity
-
-## Progressive Web App Requirements
-
-### Manifest
-```json
-{
-  "name": "Bütçe Kontrol Sistemi",
-  "short_name": "Bütçe",
-  "start_url": "/",
-  "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#007bff",
-  "icons": [
-    {
-      "src": "icon-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
-}
-```
-
-### Service Worker Features (In Progress)
-- Offline functionality
-- Cache management
-- Background sync
-- Push notifications
-- Update handling
 
 ## Responsive Design Requirements
 
@@ -195,12 +157,11 @@
 
 ## Testing Requirements
 
-### PWA Testing
-- Service Worker functionality
-- Offline capability
-- Installation flow
-- Push notifications
-- Cache management
+### Functional Testing
+- Core features
+- Data management
+- Currency conversion
+- Mobile functionality
 
 ### Performance Testing
 - Load time optimization
@@ -212,8 +173,8 @@
 ### Compatibility Testing
 - Cross-browser verification
 - Mobile device testing
-- PWA feature support
-- Offline functionality
+- Touch interaction testing
+- Responsive design validation
 
 ## Documentation Standards
 
