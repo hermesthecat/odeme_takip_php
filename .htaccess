@@ -77,10 +77,6 @@ AddDefaultCharset UTF-8
 
 php_value date.timezone "Europe/Istanbul"
 
-# Prevent directory listing
-
-Options -Indexes
-
 # Block access to sensitive files
 
 <FilesMatch "^\.|composer\.json|composer\.lock|package\.json|package-lock\.json|README\.md">
