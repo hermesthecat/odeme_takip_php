@@ -1,12 +1,14 @@
 <?php
-class Database {
+class Database
+{
     private $host = 'localhost';
-    private $db_name = 'butce_db';
+    private $db_name = 'odeme_takip';
     private $username = 'root';
-    private $password = '';
+    private $password = 'root';
     private $conn;
 
-    public function getConnection() {
+    public function getConnection()
+    {
         $this->conn = null;
 
         try {
@@ -17,7 +19,7 @@ class Database {
             );
             $this->conn->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             $this->conn->exec("set names utf8");
-        } catch(PDOException $e) {
+        } catch (PDOException $e) {
             echo "Connection Error: " . $e->getMessage();
         }
 
