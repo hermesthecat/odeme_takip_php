@@ -37,7 +37,7 @@ switch ($method) {
             default:
                 $response = [
                     'success' => false,
-                    'errors' => ['Invalid Auth action']
+                    'errors' => ['Invalid Post Auth Action']
                 ];
         }
         break;
@@ -61,7 +61,7 @@ switch ($method) {
             default:
                 $response = [
                     'success' => false,
-                    'errors' => ['Invalid Auth action']
+                    'errors' => ['Invalid Get Auth Action']
                 ];
         }
         break;
@@ -69,7 +69,7 @@ switch ($method) {
     default:
         $response = [
             'success' => false,
-            'errors' => ['Invalid Auth request method']
+            'errors' => ['Invalid Auth Request Method']
         ];
 }
 
