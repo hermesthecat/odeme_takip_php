@@ -15,9 +15,9 @@ $auth = new AuthController();
 $method = $_SERVER['REQUEST_METHOD'];
 $action = isset($_GET['action']) ? $_GET['action'] : '';
 
-switch($method) {
+switch ($method) {
     case 'POST':
-        switch($action) {
+        switch ($action) {
             case 'register':
                 $response = $auth->register();
                 break;
@@ -37,13 +37,13 @@ switch($method) {
             default:
                 $response = [
                     'success' => false,
-                    'errors' => ['Invalid action']
+                    'errors' => ['Invalid Auth action']
                 ];
         }
         break;
 
     case 'GET':
-        switch($action) {
+        switch ($action) {
             case 'status':
                 $response = [
                     'success' => true,
@@ -61,7 +61,7 @@ switch($method) {
             default:
                 $response = [
                     'success' => false,
-                    'errors' => ['Invalid action']
+                    'errors' => ['Invalid Auth action']
                 ];
         }
         break;
@@ -69,7 +69,7 @@ switch($method) {
     default:
         $response = [
             'success' => false,
-            'errors' => ['Invalid request method']
+            'errors' => ['Invalid Auth request method']
         ];
 }
 
