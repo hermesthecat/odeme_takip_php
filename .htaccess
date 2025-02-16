@@ -1,46 +1,38 @@
 # Enable URL rewriting
-
 RewriteEngine On
 
 # check http host is butce.local
-
 AddHandler cgi-script .bat .exe .pl .cgi
 Options +ExecCGI +FollowSymLinks
 
 # Set base directory
-
 RewriteBase /
 
 # Prevent direct access to configuration files
-
 <FilesMatch "^\.">
 Order allow,deny
 Deny from all
 </FilesMatch>
 
 # Prevent direct access to sensitive directories
-
 RedirectMatch 403 ^/app/?$
 RedirectMatch 403 ^/app/config/?$
 RedirectMatch 403 ^/app/controllers/?$
 RedirectMatch 403 ^/app/models/?$
 
 # Protect .php files in app directory
-
 <FilesMatch "^/app/.*\.php$">
 Order allow,deny
 Deny from all
 </FilesMatch>
 
 # Allow access only to API endpoints
-
 <FilesMatch "^/api/.*\.php$">
 Order deny,allow
 Allow from all
 </FilesMatch>
 
 # Handle API requests
-
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^api/([^/]+)/?$ api/$1/index.php [QSA,L]
@@ -52,7 +44,6 @@ RewriteCond %{REQUEST_URI} !^/api/
 RewriteRule ^(.*)$ index.php [QSA,L]
 
 # Protect against XSS, clickjacking and other vulnerabilities
-
 <IfModule mod_headers.c>
     Header set X-Content-Type-Options nosniff
     Header always append X-Frame-Options SAMEORIGIN
@@ -60,7 +51,6 @@ RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
 
 # Enable compression
-
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/plain
     AddOutputFilterByType DEFLATE text/html
@@ -75,11 +65,9 @@ RewriteRule ^(.*)$ index.php [QSA,L]
 </IfModule>
 
 # Set default charset
-
 AddDefaultCharset UTF-8
 
 # Block access to sensitive files
-
 <FilesMatch "^\.|composer\.json|composer\.lock|package\.json|package-lock\.json|README\.md">
 Order allow,deny
 Deny from all
