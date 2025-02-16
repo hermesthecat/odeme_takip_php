@@ -1,0 +1,290 @@
+/* General Layout */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: #f8f9fa;
+}
+
+main {
+    flex: 1;
+}
+
+.footer {
+    margin-top: auto;
+}
+
+/* Navigation */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+/* Cards */
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,.075);
+    border: none;
+    margin-bottom: 1rem;
+}
+
+.card-header {
+    background-color: #fff;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+/* Forms */
+.form-control:focus,
+.form-select:focus {
+    border-color: #80bdff;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.form-text {
+    color: #6c757d;
+}
+
+/* Buttons */
+.btn {
+    font-weight: 500;
+}
+
+.btn-primary {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* Tables */
+.table {
+    background-color: #fff;
+}
+
+.table th {
+    font-weight: 600;
+    background-color: #f8f9fa;
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(0,0,0,.03);
+}
+
+/* Progress Bars */
+.progress {
+    background-color: #e9ecef;
+}
+
+.progress-bar {
+    transition: width .6s ease;
+}
+
+/* Badges */
+.badge {
+    font-weight: 500;
+    padding: 0.35em 0.65em;
+}
+
+/* Alerts */
+.alert {
+    border: none;
+    border-radius: 0.25rem;
+}
+
+/* Modals */
+.modal-content {
+    border: none;
+    box-shadow: 0 0.5rem 1rem rgba(0,0,0,.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid #dee2e6;
+}
+
+.modal-footer {
+    border-top: 1px solid #dee2e6;
+}
+
+/* Toast Notifications */
+.toast-container {
+    z-index: 1050;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,.8);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Stats Cards */
+.stats-card {
+    transition: transform .2s;
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Chart Containers */
+.chart-container {
+    position: relative;
+    height: 300px;
+}
+
+/* Currency Inputs */
+.currency-input-group .form-control {
+    text-align: right;
+}
+
+.currency-symbol {
+    background-color: #e9ecef;
+    border: 1px solid #ced4da;
+    border-left: none;
+    padding: .375rem .75rem;
+}
+
+/* Date Inputs */
+input[type="date"] {
+    min-height: calc(1.5em + .75rem + 2px);
+}
+
+/* Custom Tab Navigation */
+.nav-tabs .nav-link {
+    border: none;
+    color: #6c757d;
+    padding: .75rem 1rem;
+}
+
+.nav-tabs .nav-link:hover {
+    border: none;
+    color: #495057;
+}
+
+.nav-tabs .nav-link.active {
+    color: #0d6efd;
+    border: none;
+    border-bottom: 2px solid #0d6efd;
+}
+
+/* List Groups */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid rgba(0,0,0,.125);
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+/* Category Pills */
+.category-pill {
+    padding: .25rem .75rem;
+    border-radius: 999px;
+    font-size: .875rem;
+    font-weight: 500;
+    background-color: #e9ecef;
+    color: #495057;
+}
+
+/* Calendar */
+.calendar {
+    background: #fff;
+    border-radius: .25rem;
+    padding: 1rem;
+}
+
+.calendar-day {
+    min-height: 100px;
+    border: 1px solid #dee2e6;
+    padding: .5rem;
+}
+
+.calendar-event {
+    background-color: #e9ecef;
+    border-radius: .25rem;
+    padding: .25rem .5rem;
+    margin-bottom: .25rem;
+    font-size: .875rem;
+}
+
+/* Responsive Font Sizes */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 1.75rem;
+    }
+    h2 {
+        font-size: 1.5rem;
+    }
+    h3 {
+        font-size: 1.25rem;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    body {
+        background-color: #212529;
+        color: #f8f9fa;
+    }
+
+    .card,
+    .modal-content {
+        background-color: #343a40;
+    }
+
+    .card-header,
+    .modal-header,
+    .modal-footer {
+        background-color: #2c3136;
+        border-color: #495057;
+    }
+
+    .form-control,
+    .form-select {
+        background-color: #2c3136;
+        border-color: #495057;
+        color: #f8f9fa;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        background-color: #2c3136;
+        border-color: #0d6efd;
+        color: #f8f9fa;
+    }
+
+    .table {
+        color: #f8f9fa;
+    }
+
+    .table th {
+        background-color: #2c3136;
+    }
+
+    .table td {
+        border-color: #495057;
+    }
+
+    .currency-symbol {
+        background-color: #2c3136;
+        border-color: #495057;
+        color: #f8f9fa;
+    }
+}
