@@ -24,12 +24,9 @@ async function handleLogin(event) {
         const form = event.target;
         const data = formDataToJSON(form);
 
-        const response = await fetchAPI('/api/auth', {
+        const response = await fetchAPI('/api/auth?action=login', {
             method: 'POST',
-            body: JSON.stringify({
-                ...data,
-                action: 'login'
-            })
+            body: JSON.stringify(data)
         });
 
         if (response.status) {

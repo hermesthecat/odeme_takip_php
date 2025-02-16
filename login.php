@@ -4,7 +4,12 @@
  * @author A. Kerem Gök
  */
 
+require_once 'includes/config.php';
+require_once 'includes/security.php';
 require_once 'includes/functions.php';
+
+// Initialize secure session
+initSecureSession();
 
 // Zaten oturum açıksa ana sayfaya yönlendir
 if (isLoggedIn()) {
@@ -13,7 +18,7 @@ if (isLoggedIn()) {
 }
 
 // CSRF token oluştur
-$csrf_token = generateToken();
+$csrf_token = generateCsrfToken();
 ?>
 <!DOCTYPE html>
 <html lang="tr">

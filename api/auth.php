@@ -7,30 +7,8 @@
 
 require_once '../includes/config.php';
 require_once '../includes/security.php';
+require_once '../includes/functions.php';
 //require_once '../includes/mail.php';
-
-// Initialize secure session if not already started
-if (session_status() === PHP_SESSION_NONE) {
-ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 1);
-ini_set('session.cookie_samesite', 'Strict');
-ini_set('session.use_strict_mode', 1);
-ini_set('session.use_only_cookies', 1);
-ini_set('session.gc_maxlifetime', 3600);
-
-    // Set session cookie parameters
-$parsed_url = parse_url(ALLOWED_ORIGIN);
-session_set_cookie_params([
-    'lifetime' => 0,
-    'path' => '/',
-    'domain' => $parsed_url['host'],
-    'secure' => true,
-    'httponly' => true,
-    'samesite' => 'Strict'
-]);
-
-    session_start();
-}
 
 if (!initSecureSession()) {
     http_response_code(440); // Login Time-out
@@ -47,17 +25,21 @@ require_once '../includes/db.php';
 // CORS ayarları - Sadece izin verilen originlere
 header('Access-Control-Allow-Origin: ' . ALLOWED_ORIGIN);
 header('Access-Control-Allow-Methods: POST, GET, OPTIONS');
-header('Access-Control-Allow-Headers: Content-Type, X-CSRF-Token');
+header('Access-Control-Allow-Headers: Content-Type, X-CSRF-Token, Accept');
 header('Access-Control-Allow-Credentials: true');
 
 if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
     exit(0);
 }
 
-// İstek tipini al
-$action = isset($_GET['action']) ? $_GET['action'] : 
-         (isset($_POST['action']) ? $_POST['action'] : 
-         (json_decode(file_get_contents('php://input'), true)['action'] ?? ''));
+// Get JSON data for POST/PUT/PATCH/DELETE requests
+$jsonData = null;
+if (in_array($_SERVER['REQUEST_METHOD'], ['POST', 'PUT', 'PATCH', 'DELETE'])) {
+    $jsonData = json_decode(file_get_contents('php://input'), true);
+}
+
+// Get action from query params, form data, or JSON body
+$action = $_GET['action'] ?? $_POST['action'] ?? $jsonData['action'] ?? '';
 
 // Yanıt şablonu
 $response = [
@@ -67,6 +49,22 @@ $response = [
 ];
 
 try {
+// CSRF validation for non-GET requests
+    if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
+        // Check both header and form token
+        $headerToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? null;
+        $formToken = $jsonData['csrf_token'] ?? $_POST['csrf_token'] ?? null;
+        
+        // Use header token if available, otherwise use form token
+        $csrfToken = $headerToken ?? $formToken;
+        
+        if (!$csrfToken) {
+            throw new Exception('CSRF token eksik');
+        }
+        
+        checkToken($csrfToken);
+    }
+
     // Rate limiting kontrolü
     if (!checkRateLimit($_SERVER['REMOTE_ADDR'], $action)) {
         throw new Exception('Çok fazla deneme. Lütfen daha sonra tekrar deneyin.');
@@ -78,7 +76,7 @@ try {
                 throw new Exception('Geçersiz istek metodu');
             }
 
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = $jsonData;
             $username = sanitizeInput($data['username'] ?? '');
             $password = $data['password'] ?? '';
             $remember = $data['remember'] ?? false;
@@ -129,33 +127,16 @@ try {
                 throw new Exception('Hesabınız aktif değil');
             }
 
-            // Clear any existing session data and start fresh
-            $_SESSION = array();
-            if (session_status() === PHP_SESSION_ACTIVE) {
-                session_destroy();
-            }
-            session_start();
-            session_regenerate_id(true);
+            // Start fresh secure session
+            initSecureSession(true);
 
             // Set session data
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['first_name'] = $user['first_name'];
             $_SESSION['last_name'] = $user['last_name'];
-            $_SESSION['last_activity'] = time();
             $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
             $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
-
-            // Ensure cookie settings
-            $parsed_url = parse_url(ALLOWED_ORIGIN);
-            session_set_cookie_params([
-                'lifetime' => 0,
-                'path' => '/',
-                'domain' => $parsed_url['host'],
-                'secure' => true,
-                'httponly' => true,
-                'samesite' => 'Strict'
-            ]);
 
         // Remember me token oluştur
             if ($remember) {
@@ -226,7 +207,7 @@ try {
                 throw new Exception('Geçersiz istek metodu');
             }
 
-            $data = json_decode(file_get_contents('php://input'), true);
+            $data = $jsonData;
             $username = $data['username'] ?? '';
             $password = $data['password'] ?? '';
             $email = $data['email'] ?? '';
@@ -258,8 +239,7 @@ try {
                 throw new Exception('Geçersiz istek metodu');
             }
 
-            $data = json_decode(file_get_contents('php://input'), true);
-            $email = $data['email'] ?? '';
+            $email = $jsonData['email'] ?? '';
 
             if (empty($email)) {
                 throw new Exception('Email adresi gereklidir');
@@ -307,8 +287,7 @@ try {
                 throw new Exception('Geçersiz istek metodu');
             }
 
-            $data = json_decode(file_get_contents('php://input'), true);
-            $token = $data['token'] ?? '';
+            $token = $jsonData['token'] ?? '';
 
             if (empty($token)) {
                 throw new Exception('Token gereklidir');
@@ -339,9 +318,8 @@ try {
                 throw new Exception('Geçersiz istek metodu');
             }
 
-            $data = json_decode(file_get_contents('php://input'), true);
-            $token = $data['token'] ?? '';
-            $password = $data['password'] ?? '';
+            $token = $jsonData['token'] ?? '';
+            $password = $jsonData['password'] ?? '';
 
             if (empty($token) || empty($password)) {
                 throw new Exception('Token ve yeni şifre gereklidir');

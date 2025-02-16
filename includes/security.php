@@ -11,10 +11,53 @@ define('SESSION_LIFETIME', 3600); // 1 saat
 define('REMEMBER_ME_LIFETIME', 2592000); // 30 gün
 
 /**
- * Güvenli session başlatma
+ * Session cookie parametrelerini ayarlama
  */
-function initSecureSession()
+function setSecureSessionParams() {
+    $parsed_url = parse_url(ALLOWED_ORIGIN);
+    
+    // Set PHP session configuration
+    ini_set('session.cookie_httponly', 1);
+    ini_set('session.cookie_secure', 1);
+    ini_set('session.cookie_samesite', 'Strict');
+    ini_set('session.use_strict_mode', 1);
+    ini_set('session.use_only_cookies', 1);
+    ini_set('session.gc_maxlifetime', SESSION_LIFETIME);
+
+    // Set session cookie parameters
+    session_set_cookie_params([
+        'lifetime' => 0,
+        'path' => '/',
+        'domain' => $parsed_url['host'],
+        'secure' => true,
+        'httponly' => true,
+        'samesite' => 'Strict'
+    ]);
+}
+
+/**
+ * Güvenli session başlatma ve yönetme
+ */
+function initSecureSession($force_new = false)
 {
+    if (session_status() === PHP_SESSION_NONE) {
+        setSecureSessionParams();
+        session_start();
+    }
+
+    if ($force_new) {
+        // Clear any existing session data and start fresh
+        $_SESSION = array();
+        if (session_status() === PHP_SESSION_ACTIVE) {
+            session_destroy();
+        }
+        setSecureSessionParams();
+        session_start();
+        session_regenerate_id(true);
+        $_SESSION['last_activity'] = time();
+        return true;
+    }
+
     if (!isset($_SESSION['last_activity'])) {
         $_SESSION['last_activity'] = time();
         return true;
@@ -23,6 +66,7 @@ function initSecureSession()
     if (time() - $_SESSION['last_activity'] > SESSION_LIFETIME) {
         session_unset();
         session_destroy();
+        setSecureSessionParams();
         session_start();
         return false;
     }
@@ -133,20 +177,22 @@ function logSecurityEvent($event, $details = [])
  */
 function generateCsrfToken()
 {
-    if (empty($_SESSION['csrf_token'])) {
+    if (!isset($_SESSION['csrf_token']) || empty($_SESSION['csrf_token'])) {
         $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
     }
     return $_SESSION['csrf_token'];
 }
 
-function validateCsrfToken($token)
+function checkCsrfToken($token)
 {
-    if (
-        empty($_SESSION['csrf_token']) ||
-        !hash_equals($_SESSION['csrf_token'], $token)
-    ) {
-        throw new Exception('Geçersiz CSRF token');
+    if (!isset($_SESSION['csrf_token']) || empty($_SESSION['csrf_token']) || empty($token)) {
+        throw new Exception('CSRF token eksik');
     }
+    
+    if (!hash_equals($_SESSION['csrf_token'], $token)) {
+        throw new Exception('CSRF token doğrulaması başarısız');
+    }
+    
     return true;
 }
 
