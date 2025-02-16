@@ -5,11 +5,43 @@
  * Kimlik doğrulama API endpoint'i
  */
 
-header('Content-Type: application/json');
 require_once '../includes/config.php';
-require_once '../includes/db.php';
-//require_once '../includes/mail.php';
 require_once '../includes/security.php';
+//require_once '../includes/mail.php';
+
+// Initialize secure session if not already started
+if (session_status() === PHP_SESSION_NONE) {
+ini_set('session.cookie_httponly', 1);
+ini_set('session.cookie_secure', 1);
+ini_set('session.cookie_samesite', 'Strict');
+ini_set('session.use_strict_mode', 1);
+ini_set('session.use_only_cookies', 1);
+ini_set('session.gc_maxlifetime', 3600);
+
+    // Set session cookie parameters
+$parsed_url = parse_url(ALLOWED_ORIGIN);
+session_set_cookie_params([
+    'lifetime' => 0,
+    'path' => '/',
+    'domain' => $parsed_url['host'],
+    'secure' => true,
+    'httponly' => true,
+    'samesite' => 'Strict'
+]);
+
+    session_start();
+}
+
+if (!initSecureSession()) {
+    http_response_code(440); // Login Time-out
+    die(json_encode([
+        'status' => false,
+        'message' => 'Oturum süresi doldu. Lütfen tekrar giriş yapın.'
+    ]));
+}
+
+header('Content-Type: application/json');
+require_once '../includes/db.php';
 
 
 // CORS ayarları - Sadece izin verilen originlere
@@ -97,8 +129,15 @@ try {
                 throw new Exception('Hesabınız aktif değil');
             }
 
-            // Başarılı giriş - güvenli session başlat
+            // Clear any existing session data and start fresh
+            $_SESSION = array();
+            if (session_status() === PHP_SESSION_ACTIVE) {
+                session_destroy();
+            }
+            session_start();
             session_regenerate_id(true);
+
+            // Set session data
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['username'] = $user['username'];
             $_SESSION['first_name'] = $user['first_name'];
@@ -107,14 +146,23 @@ try {
             $_SESSION['ip'] = $_SERVER['REMOTE_ADDR'];
             $_SESSION['user_agent'] = $_SERVER['HTTP_USER_AGENT'];
 
+            // Ensure cookie settings
+            $parsed_url = parse_url(ALLOWED_ORIGIN);
+            session_set_cookie_params([
+                'lifetime' => 0,
+                'path' => '/',
+                'domain' => $parsed_url['host'],
+                'secure' => true,
+                'httponly' => true,
+                'samesite' => 'Strict'
+            ]);
+
         // Remember me token oluştur
             if ($remember) {
                 $token = generateRememberMeToken($user['id']);
                 setRememberMeCookie($token);
             }
             
-            // Güvenli session başlatma
-            session_regenerate_id(true);
 
             // Başarılı girişi kaydet ve sayaçları sıfırla
             $stmt = $pdo->prepare('
@@ -148,13 +196,29 @@ try {
             break;
 
         case 'check':
-            $response['status'] = isset($_SESSION['user_id']);
-            $response['data'] = $response['status'] ? [
-                'user_id' => $_SESSION['user_id'],
-                'username' => $_SESSION['username'],
-                'first_name' => $_SESSION['first_name'],
-                'last_name' => $_SESSION['last_name']
-            ] : null;
+            if (isset($_SESSION['user_id'])) {
+                // Update session timestamp
+                $_SESSION['last_activity'] = time();
+                
+                // Verify session integrity
+                if ($_SESSION['ip'] !== $_SERVER['REMOTE_ADDR'] || 
+                    $_SESSION['user_agent'] !== $_SERVER['HTTP_USER_AGENT']) {
+                    session_destroy();
+                    $response['status'] = false;
+                    $response['message'] = 'Güvenlik kontrolü başarısız. Lütfen tekrar giriş yapın.';
+                } else {
+                    $response['status'] = true;
+                    $response['data'] = [
+                        'user_id' => $_SESSION['user_id'],
+                        'username' => $_SESSION['username'],
+                        'first_name' => $_SESSION['first_name'],
+                        'last_name' => $_SESSION['last_name']
+                    ];
+                }
+            } else {
+                $response['status'] = false;
+                $response['message'] = 'Oturum bulunamadı.';
+            }
             break;
 
         case 'register':

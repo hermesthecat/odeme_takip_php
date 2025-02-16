@@ -56,7 +56,7 @@ $csrf_token = generateToken();
                 <p>Finansal hayatınızı kontrol altına alın</p>
             </div>
 
-            <form id="loginForm" onsubmit="return handleLogin(event)">
+            <form id="loginForm">
                 <input type="hidden" name="csrf_token" value="<?php echo $csrf_token; ?>">
 
                 <div class="form-group">
@@ -113,6 +113,14 @@ $csrf_token = generateToken();
     <!-- CSRF Token -->
     <script>
         const CSRF_TOKEN = '<?php echo $csrf_token; ?>';
+
+        // Event listener for login form
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            await handleLogin(e);
+            return false;
+        });
 
         // Şifre göster/gizle
         document.querySelector('.toggle-password').addEventListener('click', function() {

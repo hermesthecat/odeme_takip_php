@@ -6,6 +6,7 @@
 async function fetchAPI(url, options = {}) {
     const defaultOptions = {
         method: 'GET',
+        credentials: 'include', // Add this to send cookies
         headers: {
             'Content-Type': 'application/json',
             'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content
@@ -93,4 +94,4 @@ function updateOnlineStatus() {
             timer: 3000
         });
     }
-} 
+}

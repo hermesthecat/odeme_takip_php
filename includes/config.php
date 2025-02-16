@@ -10,11 +10,8 @@ define('APP_NAME', 'Kişisel Finans Yönetimi');
 define('APP_VERSION', '1.0.0');
 define('APP_URL', 'https://butce.local');
 
-// CORS ve Güvenlik ayarları
+// CORS ayarı
 define('ALLOWED_ORIGIN', 'https://butce.local');
-header('Access-Control-Allow-Origin: ' . ALLOWED_ORIGIN);
-header('Access-Control-Allow-Methods: GET, POST, PUT, DELETE, PATCH');
-header('Access-Control-Allow-Headers: Content-Type, X-CSRF-Token');
 
 // Hata raporlama
 error_reporting(E_ALL);
@@ -23,11 +20,6 @@ ini_set('display_errors', 1);
 // Zaman dilimi ve karakter seti
 date_default_timezone_set('Europe/Istanbul');
 ini_set('default_charset', 'UTF-8');
-
-// Oturum ayarları
-ini_set('session.cookie_httponly', 1);
-ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_secure', 1);
 
 // API ayarları
 define('API_VERSION', '1.0.0');
@@ -284,14 +276,8 @@ function setCache($key, $value)
     file_put_contents($cache_file, json_encode($data));
 }
 
-// Session ayarları
-session_name('butce_session');
-ini_set('session.cookie_httponly', 1);
-ini_set('session.cookie_secure', 1);
-ini_set('session.use_strict_mode', 1);
-ini_set('session.gc_maxlifetime', 3600);
-ini_set('session.use_cookies', 1);
-ini_set('session.use_only_cookies', 1);
-
-// Oturumu başlat
-session_start();
+// Session name definition (used by auth.php)
+if (!defined('SESSION_NAME')) {
+    define('SESSION_NAME', 'butce_session');
+}
+session_name(SESSION_NAME);

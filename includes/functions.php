@@ -10,7 +10,14 @@ require_once __DIR__ . '/db.php';
 
 function isLoggedIn()
 {
-    return isset($_SESSION['user_id']);
+    return isset($_SESSION['user_id']) 
+        && isset($_SESSION['username']) 
+        && isset($_SESSION['last_activity'])
+        && isset($_SESSION['ip'])
+        && isset($_SESSION['user_agent'])
+        && $_SESSION['ip'] === $_SERVER['REMOTE_ADDR']
+        && $_SESSION['user_agent'] === $_SERVER['HTTP_USER_AGENT']
+        && (time() - $_SESSION['last_activity']) <= SESSION_LIFETIME;
 }
 
 function checkAuth()

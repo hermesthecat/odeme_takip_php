@@ -7,7 +7,7 @@
 async function checkSession() {
     try {
         const response = await fetchAPI('/api/auth?action=check');
-        if (!response.success) {
+        if (!response.status) {
             window.location.href = '/login.php';
         }
     } catch (error) {
@@ -18,6 +18,7 @@ async function checkSession() {
 // Giriş formu işleme
 async function handleLogin(event) {
     event.preventDefault();
+    event.stopPropagation();
 
     try {
         const form = event.target;
@@ -31,15 +32,17 @@ async function handleLogin(event) {
             })
         });
 
-        if (response.success) {
-            window.location.href = '/index.php';
+        if (response.status) {
+            window.location.assign('/index.php');
+            return false;
         } else {
             Swal.fire({
                 icon: 'error',
                 title: 'Giriş Başarısız',
-                text: response.error || 'Kullanıcı adı veya şifre hatalı.',
+                text: response.message || 'Kullanıcı adı veya şifre hatalı.',
                 confirmButtonText: 'Tamam'
             });
+            return false;
         }
     } catch (error) {
         console.error('Giriş hatası:', error);
@@ -49,6 +52,7 @@ async function handleLogin(event) {
             text: 'Giriş yapılırken bir hata oluştu.',
             confirmButtonText: 'Tamam'
         });
+        return false;
     }
 }
 
@@ -79,7 +83,7 @@ async function handleRegister(event) {
             })
         });
 
-        if (response.success) {
+        if (response.status) {
             Swal.fire({
                 icon: 'success',
                 title: 'Başarılı',
@@ -92,7 +96,7 @@ async function handleRegister(event) {
             Swal.fire({
                 icon: 'error',
                 title: 'Kayıt Başarısız',
-                text: response.error || 'Kayıt olurken bir hata oluştu.',
+                text: response.message || 'Kayıt olurken bir hata oluştu.',
                 confirmButtonText: 'Tamam'
             });
         }
@@ -115,7 +119,7 @@ async function handleLogout() {
             body: JSON.stringify({ action: 'logout' })
         });
 
-        if (response.success) {
+        if (response.status) {
             window.location.href = '/login.php';
         }
     } catch (error) {
@@ -139,7 +143,7 @@ async function handlePasswordReset(event) {
             })
         });
 
-        if (response.success) {
+        if (response.status) {
             Swal.fire({
                 icon: 'success',
                 title: 'Başarılı',
@@ -150,7 +154,7 @@ async function handlePasswordReset(event) {
             Swal.fire({
                 icon: 'error',
                 title: 'Hata',
-                text: response.error || 'Şifre sıfırlama isteği gönderilemedi.',
+                text: response.message || 'Şifre sıfırlama isteği gönderilemedi.',
                 confirmButtonText: 'Tamam'
             });
         }
@@ -192,7 +196,7 @@ async function handlePasswordChange(event) {
             })
         });
 
-        if (response.success) {
+        if (response.status) {
             Swal.fire({
                 icon: 'success',
                 title: 'Başarılı',
@@ -203,7 +207,7 @@ async function handlePasswordChange(event) {
             Swal.fire({
                 icon: 'error',
                 title: 'Hata',
-                text: response.error || 'Şifre değiştirilemedi.',
+                text: response.message || 'Şifre değiştirilemedi.',
                 confirmButtonText: 'Tamam'
             });
         }
@@ -229,8 +233,8 @@ async function updateUserPreferences(preferences) {
             })
         });
 
-        if (!response.success) {
-            throw new Error(response.error || 'Tercihler güncellenemedi');
+        if (!response.status) {
+            throw new Error(response.message || 'Tercihler güncellenemedi');
         }
     } catch (error) {
         console.error('Tercih güncelleme hatası:', error);

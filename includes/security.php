@@ -114,18 +114,17 @@ function logSecurityEvent($event, $details = [])
 
     $stmt = $pdo->prepare('
         INSERT INTO activity_log (
-            user_id, action, entity_type,
-            entity_id, details, ip_address,
-            user_agent
-        ) VALUES (?, ?, "security", 0, ?, ?, ?)
+            user_id, action, description,
+            ip_address, additional_data
+        ) VALUES (?, ?, ?, ?, ?)
     ');
 
     $stmt->execute([
         $details['user_id'] ?? null,
         $event,
-        json_encode($details),
+        'Security event: ' . $event,
         $details['ip'] ?? $_SERVER['REMOTE_ADDR'],
-        $_SERVER['HTTP_USER_AGENT'] ?? null
+        json_encode($details)
     ]);
 }
 
