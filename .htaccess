@@ -2,15 +2,14 @@
 
 RewriteEngine On
 
+# check http host is butce.local
+
+AddHandler cgi-script .bat .exe .pl .cgi
+Options +ExecCGI +FollowSymLinks
+
 # Set base directory
 
 RewriteBase /
-
-# check http host is butce.local
-
-RewriteCond %{HTTP_HOST} ^butce\.local$ [NC]
-AddHandler cgi-script .bat .exe .pl .cgi
-Options +ExecCGI +FollowSymLinks
 
 # Prevent direct access to configuration files
 
@@ -72,10 +71,6 @@ RewriteRule ^api/([^/]+)/?$ api/$1/index.php [QSA,L]
 # Set default charset
 
 AddDefaultCharset UTF-8
-
-# Set default timezone
-
-php_value date.timezone "Europe/Istanbul"
 
 # Block access to sensitive files
 
