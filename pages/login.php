@@ -1,8 +1,10 @@
 <?php
+session_start();
+require_once __DIR__ . '/../app/helpers/functions.php';
+
 // Check if already logged in
-if(isset($_SESSION['user_id'])) {
-    header('Location: /dashboard');
-    exit;
+if(is_logged_in()) {
+    redirect('/dashboard');
 }
 ?>
 <div class="row justify-content-center">
@@ -28,6 +30,7 @@ if(isset($_SESSION['user_id'])) {
                     <div class="d-grid gap-2">
                         <button type="submit" class="btn btn-primary">Giriş Yap</button>
                         <a href="/register" class="btn btn-link">Hesap Oluştur</a>
+                        <a href="/reset-password" class="btn btn-link">Şifremi Unuttum</a>
                     </div>
                 </form>
             </div>
@@ -51,11 +54,21 @@ document.getElementById('loginForm').addEventListener('submit', async function(e
         if(data.success) {
             window.location.href = '/dashboard';
         } else {
-            alert(data.errors ? data.errors.join('\n') : 'Giriş başarısız');
+            Swal.fire({
+                icon: 'error',
+                title: 'Giriş Başarısız',
+                text: data.errors ? data.errors.join('\n') : 'Giriş yapılırken bir hata oluştu',
+                confirmButtonText: 'Tamam'
+            });
         }
     } catch(error) {
         console.error('Login error:', error);
-        alert('Giriş yapılırken bir hata oluştu');
+        Swal.fire({
+            icon: 'error',
+            title: 'Hata',
+            text: 'Giriş yapılırken bir hata oluştu',
+            confirmButtonText: 'Tamam'
+        });
     }
 });
 </script>

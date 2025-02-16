@@ -11,19 +11,6 @@ Options +ExecCGI +FollowSymLinks
 
 RewriteBase /
 
-# Handle page requests
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^login/?$ pages/login.php [QSA,L]
-RewriteRule ^register/?$ pages/register.php [QSA,L]
-RewriteRule ^profile/?$ pages/profile.php [QSA,L]
-RewriteRule ^settings/?$ pages/settings.php [QSA,L]
-RewriteRule ^reports/?$ pages/reports.php [QSA,L]
-RewriteRule ^savings/?$ pages/savings.php [QSA,L]
-RewriteRule ^terms/?$ pages/terms.php [QSA,L]
-RewriteRule ^privacy/?$ pages/privacy.php [QSA,L]
-RewriteRule ^reset-password/?$ pages/reset-password.php [QSA,L]
-
 # Prevent direct access to configuration files
 
 <FilesMatch "^\.">
@@ -40,14 +27,14 @@ RedirectMatch 403 ^/app/models/?$
 
 # Protect .php files in app directory
 
-<FilesMatch "^/app/.\*\.php$">
+<FilesMatch "^/app/.*\.php$">
 Order allow,deny
 Deny from all
 </FilesMatch>
 
 # Allow access only to API endpoints
 
-<FilesMatch "^/api/.\*\.php$">
+<FilesMatch "^/api/.*\.php$">
 Order deny,allow
 Allow from all
 </FilesMatch>
@@ -57,6 +44,12 @@ Allow from all
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule ^api/([^/]+)/?$ api/$1/index.php [QSA,L]
+
+# Route all other requests through index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} !^/api/
+RewriteRule ^(.*)$ index.php [QSA,L]
 
 # Protect against XSS, clickjacking and other vulnerabilities
 
